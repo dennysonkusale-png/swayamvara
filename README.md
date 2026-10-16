@@ -4,6 +4,8 @@ A free, single-file **marriage portfolio (biodata) builder** for Indian users. O
 browser and create, customise, download and email a polished matrimonial profile — no server,
 no sign-up, no build step.
 
+![Swayamvara — the editor on the left, the live A4 portfolio preview on the right](screenshot.png)
+
 *Swayamvara* (स्वयंवर) was the ancient Vedic ceremony in which a bride chose her own groom —
 a fitting name for a tool that helps you present yourself on your own terms.
 
@@ -32,7 +34,7 @@ a fitting name for a tool that helps you present yourself on your own terms.
 
 Download `index.html` and open it in any browser. That's it.
 
-To host it, drop `index.html` into any static host (or enable GitHub Pages for this repo).
+Or use the hosted version: **https://dennysonkusale-png.github.io/swayamvara/**
 
 The export features (PDF/DOCX/PPTX/image) fetch a few libraries from a CDN the first time, so
 they need an internet connection. Everything else works offline.
@@ -45,3 +47,7 @@ they need an internet connection. Everything else works offline.
   your mail client instead.
 - The Guna Milan calculator uses commonly published Ashtakoot tables and is indicative only.
   Please confirm with a qualified astrologer before making any decision.
+
+## License
+
+[MIT](LICENSE)
