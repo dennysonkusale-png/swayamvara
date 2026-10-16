@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+<meta name="theme-color" content="#7a1f2b" />
+<title>स्वयंवर · Swayamvara — Marriage Portfolio Builder</title>
+<meta name="description" content="Create, customise, download and email your Indian marriage portfolio (biodata) in English, हिन्दी, मराठी and संस्कृतम्." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Marcellus&family=Noto+Serif+Devanagari:wght@400;500;600;700&family=Mukta:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   SWAYAMVARA — design system
+   ============================================================ */
+:root{
+  --maroon:#7a1f2b;
+  --maroon-d:#5c1620;
+  --gold:#c99a3c;
+  --gold-l:#e7c979;
+  --saffron:#e08a1e;
+  --teal:#0f6b63;
+  --ink:#2b2118;
+  --muted:#8a7c6a;
+  --line:#e6dccb;
+  --paper:#fdf9f2;
+  --card:#ffffff;
+  --ok:#1f7a45;
+  --err:#c0392b;
+  --radius:16px;
+  --shadow:0 10px 30px rgba(60,30,10,.10);
+  --shadow-sm:0 3px 10px rgba(60,30,10,.08);
+  --ui:'Inter','Mukta',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  --dev:'Mukta','Noto Serif Devanagari',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--ui);
+  color:var(--ink);
+  background:
+    radial-gradient(1200px 500px at 10% -10%, #fff3dd 0%, transparent 60%),
+    radial-gradient(900px 500px at 110% 0%, #fbe9ea 0%, transparent 55%),
+    var(--paper);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+body.lang-hi,body.lang-mr,body.lang-sa{font-family:var(--dev)}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select,textarea{font-family:inherit;font-size:15px;color:var(--ink)}
+a{color:var(--teal)}
+
+/* ---------- App bar ---------- */
+.appbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:10px 18px;
+  background:linear-gradient(180deg,rgba(253,249,242,.96),rgba(253,249,242,.86));
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand .mark{
+  width:40px;height:40px;border-radius:12px;flex:0 0 auto;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,var(--maroon),#a83244);
+  color:#f6d98a;font-family:var(--dev);font-size:20px;font-weight:700;
+  box-shadow:var(--shadow-sm);
+}
+.brand h1{margin:0;font-family:'Marcellus',var(--dev);font-size:20px;letter-spacing:.4px;line-height:1.05}
+.brand small{display:block;font-family:var(--ui);font-size:11px;color:var(--muted);letter-spacing:.3px}
+.appbar .tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+select.sel,input.sel{
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+  padding:9px 11px;font-size:14px;box-shadow:var(--shadow-sm);
+}
+.btn{
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 15px;border-radius:11px;font-size:14px;font-weight:600;
+  border:1px solid var(--line);background:var(--card);box-shadow:var(--shadow-sm);
+  transition:transform .06s ease,box-shadow .15s ease,background .15s ease;
+  white-space:nowrap;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn.primary{background:linear-gradient(145deg,var(--maroon),#9c2b3c);color:#fff8ec;border-color:transparent}
+.btn.gold{background:linear-gradient(145deg,var(--gold),var(--gold-l));color:#4a2f08;border-color:transparent}
+.btn.ghost{background:transparent;box-shadow:none}
+.btn.sm{padding:8px 12px;font-size:13px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn .ic{font-size:16px;line-height:1}
+
+/* ---------- Layout ---------- */
+.layout{
+  display:grid;grid-template-columns:minmax(380px,520px) 1fr;
+  gap:22px;padding:22px;max-width:1560px;margin:0 auto;align-items:start;
+}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.form-pane{padding:0;overflow:hidden}
+.preview-pane{padding:14px;position:sticky;top:78px;max-height:calc(100vh - 100px);display:flex;flex-direction:column}
+
+/* ---------- Stepper ---------- */
+.stepper{display:flex;gap:6px;overflow-x:auto;padding:12px 14px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fffdf9,#fff)}
+.step-chip{
+  flex:0 0 auto;display:flex;align-items:center;gap:7px;
+  padding:8px 12px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--muted);
+  border:1px solid var(--line);background:#fff;
+}
+.step-chip .n{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:#efe7d8;color:#7a6a52;font-size:11px}
+.step-chip.active{color:var(--maroon);border-color:#e3c7cb;background:#fdf2f3}
+.step-chip.active .n{background:var(--maroon);color:#fff}
+.step-chip.done .n{background:var(--ok);color:#fff}
+
+.step-body{padding:20px 20px 26px;max-height:calc(100vh - 260px);overflow-y:auto}
+.step-title{font-family:'Marcellus',var(--dev);font-size:22px;margin:2px 0 4px}
+.step-sub{color:var(--muted);font-size:13px;margin:0 0 18px}
+
+fieldset{border:0;padding:0;margin:0 0 18px}
+.legend{
+  font-size:12px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--gold);
+  margin:0 0 10px;padding-bottom:6px;border-bottom:1px dashed var(--line);
+}
+.field{margin-bottom:14px}
+.field > label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:#4b3d2c}
+.field .hint{font-weight:400;color:var(--muted);font-size:11.5px}
+.field input[type=text],.field input[type=date],.field input[type=time],
+.field input[type=number],.field input[type=email],.field input[type=tel],
+.field select,.field textarea{
+  width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fffdf9;
+  transition:border .15s,box-shadow .15s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,154,60,.18)
+}
+.field textarea{min-height:88px;resize:vertical}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err);background:#fff6f5}
+.field .err-msg{display:none;color:var(--err);font-size:12px;margin-top:5px}
+.field.invalid .err-msg{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:13px;font-weight:500;
+}
+.chip.on{background:#fdf2f3;border-color:#e3c7cb;color:var(--maroon);font-weight:600}
+.switch{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fffdf9;font-size:13.5px}
+.switch input{width:18px;height:18px;accent-color:var(--maroon)}
+.switch .lab{flex:1}
+.switch .sub{color:var(--muted);font-size:11.5px;display:block}
+
+/* photo grid */
+.photos{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.photo-slot{
+  width:96px;height:96px;border-radius:14px;border:1.5px dashed #d8c8ad;background:#fffdf9;
+  display:grid;place-items:center;position:relative;overflow:hidden;color:var(--muted);font-size:11px;text-align:center;padding:6px;
+}
+.photo-slot img{width:100%;height:100%;object-fit:cover}
+.photo-slot .rm{
+  position:absolute;top:3px;right:3px;width:22px;height:22px;border-radius:50%;
+  background:rgba(122,31,43,.9);color:#fff;font-size:13px;display:grid;place-items:center;
+}
+.photo-slot.primary::after{content:'★';position:absolute;bottom:3px;left:4px;color:var(--gold);font-size:14px;text-shadow:0 0 3px #fff}
+.photo-add{cursor:pointer}
+.photo-add:hover{border-color:var(--gold);color:var(--maroon)}
+
+/* step nav */
+.step-nav{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid var(--line);background:#fffdf9}
+.step-nav .mid{font-size:12.5px;color:var(--muted)}
+
+/* ---------- Preview / document ---------- */
+.preview-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:2px 4px 12px}
+.preview-bar .grow{flex:1}
+.preview-bar .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.preview-scroll{overflow:auto;border-radius:12px;background:#efe8db;padding:16px;flex:1;display:grid;place-items:start center}
+#docScale{transform-origin:top center}
+#doc{
+  width:794px;min-height:1123px;background:var(--d-bg,#fffdf8);color:var(--d-ink,#2b2118);
+  padding:0;position:relative;overflow:hidden;
+  font-family:var(--d-font,var(--ui));
+  box-shadow:0 12px 40px rgba(60,30,10,.22);
+}
+.doc-invocation{
+  text-align:center;font-family:'Noto Serif Devanagari',serif;color:var(--d-accent,#7a1f2b);
+  font-size:19px;padding:16px 0 6px;letter-spacing:1px;
+}
+.doc-head{
+  padding:26px 44px 22px;display:flex;gap:24px;align-items:center;
+  background:var(--d-head-bg,linear-gradient(135deg,#7a1f2b,#a83244));color:var(--d-head-ink,#fff8ec);
+  position:relative;
+}
+.doc-head .photo{
+  width:132px;height:132px;border-radius:50%;flex:0 0 auto;overflow:hidden;
+  border:4px solid var(--d-head-ring,rgba(246,217,138,.9));background:#fff;display:grid;place-items:center;
+  color:#b9a98f;font-size:12px;text-align:center;
+}
+.doc-head .photo img{width:100%;height:100%;object-fit:cover}
+.doc-head .id{flex:1;min-width:0}
+.doc-head h2{margin:0 0 3px;font-family:var(--d-headfont,'Cormorant Garamond',serif);font-size:34px;line-height:1.08;letter-spacing:.3px}
+.doc-head .sub{font-size:14px;opacity:.92;margin:2px 0}
+.doc-head .meta{font-size:12.5px;opacity:.85;margin-top:6px;line-height:1.5}
+.doc-body{padding:24px 44px 40px}
+.sec{margin-bottom:20px}
+.sec-title{
+  font-family:var(--d-headfont,'Cormorant Garamond',serif);
+  font-size:16px;letter-spacing:1.6px;text-transform:uppercase;color:var(--d-accent,#7a1f2b);
+  display:flex;align-items:center;gap:10px;margin:0 0 12px;
+}
+.sec-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--d-rule,#e0c9a6),transparent)}
+.grid-d{display:grid;grid-template-columns:1fr 1fr;gap:8px 26px}
+.item{display:flex;gap:8px;font-size:13.5px;line-height:1.55;padding:3px 0;border-bottom:1px dotted rgba(0,0,0,.06)}
+.item .k{color:var(--d-muted,#7a6a52);min-width:120px;flex:0 0 auto;font-weight:600}
+.item .v{color:var(--d-ink,#2b2118);flex:1}
+.item.full{grid-column:1 / -1}
+.item.full .k{min-width:120px}
+.doc-photos{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.doc-photos img{width:104px;height:104px;object-fit:cover;border-radius:8px;border:1px solid var(--d-rule,#e0c9a6)}
+.doc-foot{
+  margin-top:26px;padding-top:14px;border-top:1px solid var(--d-rule,#e0c9a6);
+  text-align:center;font-size:11px;color:var(--d-muted,#8a7c6a);font-family:var(--dev)
+}
+.empty-doc{display:grid;place-items:center;min-height:400px;color:var(--muted);text-align:center;padding:40px;font-size:14px}
+
+/* ---------- Template themes ---------- */
+#doc[data-tpl="patta"]{--d-bg:#fffaf0;--d-ink:#3a2410;--d-accent:#b3441e;--d-muted:#8a6b45;--d-rule:#e0c9a6;--d-head-bg:linear-gradient(135deg,#b3441e,#d98a2b);--d-head-ink:#fffaf0;--d-headfont:'Noto Serif Devanagari',serif}
+#doc[data-tpl="patta"] .doc-head{border-bottom:6px double #e0c9a6}
+#doc[data-tpl="rajwadi"]{--d-bg:#fff7ec;--d-ink:#3a1410;--d-accent:#8a1c2b;--d-muted:#8a5a3c;--d-rule:#d9b26a;--d-head-bg:linear-gradient(135deg,#5c1620,#8a1c2b 60%,#b8860b);--d-head-ink:#ffeec2;--d-headfont:'Cormorant Garamond',serif}
+#doc[data-tpl="rajwadi"] .doc-head{border-bottom:4px solid #d9b26a}
+#doc[data-tpl="minimal"]{--d-bg:#ffffff;--d-ink:#1c1c1c;--d-accent:#111;--d-muted:#888;--d-rule:#e5e5e5;--d-head-bg:#fff;--d-head-ink:#1c1c1c;--d-head-ring:#eee;--d-headfont:'Cormorant Garamond',serif}
+#doc[data-tpl="minimal"] .doc-head{border-bottom:1px solid #eee}
+#doc[data-tpl="minimal"] .doc-head .photo{border-width:2px}
+#doc[data-tpl="floral"]{--d-bg:#fffafc;--d-ink:#4a2b3a;--d-accent:#c2547f;--d-muted:#9a7b8a;--d-rule:#f0c9dc;--d-head-bg:linear-gradient(135deg,#e58bb0,#a8d5ba);--d-head-ink:#fff;--d-headfont:'Cormorant Garamond',serif}
+#doc[data-tpl="corporate"]{--d-bg:#ffffff;--d-ink:#16212e;--d-accent:#0f6b63;--d-muted:#5b6b78;--d-rule:#d5e3e1;--d-head-bg:linear-gradient(135deg,#0b3d4d,#0f6b63);--d-head-ink:#eafaf7;--d-headfont:'Marcellus',serif}
+#doc[data-tpl="temple"]{--d-bg:#fdf6e3;--d-ink:#3d2c0d;--d-accent:#a97b12;--d-muted:#8a6f38;--d-rule:#e6cf94;--d-head-bg:linear-gradient(135deg,#8a6110,#c99a3c);--d-head-ink:#fff8e1;--d-headfont:'Noto Serif Devanagari',serif}
+#doc[data-tpl="temple"] .doc-head{border-bottom:5px double #e6cf94}
+#doc[data-tpl="peacock"]{--d-bg:#f5fbfb;--d-ink:#12363a;--d-accent:#0f6b63;--d-muted:#4d7a7a;--d-rule:#bfe0dd;--d-head-bg:linear-gradient(135deg,#0b4f6c,#12807a 55%,#1b8a5a);--d-head-ink:#eafaf7;--d-headfont:'Marcellus',serif}
+#doc[data-tpl="ivory"]{--d-bg:#fbf6ec;--d-ink:#33302a;--d-accent:#6b5b3e;--d-muted:#8a7c63;--d-rule:#ddd2b8;--d-head-bg:linear-gradient(135deg,#e9dcc0,#d8c49a);--d-head-ink:#3a3225;--d-head-ring:#b8a678;--d-headfont:'Cormorant Garamond',serif}
+
+/* ---------- Modals ---------- */
+.modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:rgba(40,20,10,.45);padding:18px}
+.modal.open{display:grid}
+.modal .sheet{background:var(--card);border-radius:18px;max-width:760px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal .mhead{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+.modal .mhead h3{margin:0;font-family:'Marcellus',var(--dev);font-size:19px}
+.modal .mhead .x{margin-left:auto;font-size:22px;color:var(--muted);padding:4px 8px}
+.modal .mbody{padding:18px 20px}
+.tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.tpl-card{border:2px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;text-align:left}
+.tpl-card.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,154,60,.2)}
+.tpl-card .swatch{height:74px;display:grid;place-items:center;font-size:26px}
+.tpl-card .nm{padding:9px 11px;font-size:12.5px;font-weight:600}
+.tpl-card .nm small{display:block;color:var(--muted);font-weight:400;font-size:11px}
+.pickers{display:flex;gap:18px;flex-wrap:wrap;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.pickers .grp{display:flex;flex-direction:column;gap:8px}
+.pickers .grp b{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--gold)}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.sw{width:30px;height:30px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.sw.on{box-shadow:0 0 0 3px var(--gold)}
+
+/* email form */
+.emfield{margin-bottom:14px}
+.emfield label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.emfield input,.emfield textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:11px;background:#fffdf9}
+.note{font-size:12px;color:var(--muted);background:#fdf6e8;border:1px solid #f0e2c4;border-radius:10px;padding:10px 12px;margin-top:6px;line-height:1.5}
+
+/* ---------- Toast / busy ---------- */
+#toast{
+  position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
+  background:#2b2118;color:#fff7ea;padding:12px 18px;border-radius:12px;font-size:13.5px;font-weight:500;
+  box-shadow:0 14px 40px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:90vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#busy{position:fixed;inset:0;z-index:90;display:none;place-items:center;background:rgba(253,249,242,.75);backdrop-filter:blur(3px)}
+#busy.on{display:grid}
+.spinner{width:44px;height:44px;border-radius:50%;border:4px solid #e6dccb;border-top-color:var(--maroon);animation:spin .8s linear infinite}
+#busy .txt{margin-top:12px;font-size:13.5px;color:var(--maroon);font-weight:600}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* mobile tabs */
+.mtabs{display:none}
+
+/* ---------- Optional extras ---------- */
+.more-sec h4{font-family:'Marcellus',var(--dev);font-size:16px;margin:0 0 4px}
+.more-hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hint{font-size:12.5px;color:var(--muted);line-height:1.55;margin:6px 0 0}
+.gm-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+.gm-h{font-weight:700;color:var(--maroon);margin-bottom:8px;font-size:14px;font-family:var(--dev)}
+.gm-grid select,.gm-grid input{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:#fffdf9}
+.guna-result{margin-top:14px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.guna-result table{width:100%;border-collapse:collapse;font-size:13.5px}
+.guna-result td,.guna-result th{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left}
+.guna-result th{background:#fdf6e8;font-weight:600}
+.guna-total{display:flex;align-items:center;gap:12px;padding:12px 14px;background:#fdf2f3}
+.guna-total .big{font-size:28px;font-weight:700;color:var(--maroon);font-family:'Cormorant Garamond',serif}
+.guna-remark{padding:10px 12px;font-size:12px;background:#fffdf9;color:var(--muted);line-height:1.5}
+.ro-banner{background:linear-gradient(135deg,#7a1f2b,#a83244);color:#fff7ea;padding:10px 18px;display:flex;gap:14px;align-items:center;justify-content:center;font-size:13.5px;flex-wrap:wrap}
+.ro-banner[hidden]{display:none}
+body.readonly .form-pane{display:none}
+body.readonly .mtabs{display:none}
+body.readonly .layout{grid-template-columns:minmax(0,900px);justify-content:center}
+body.readonly .preview-pane{position:static;max-height:none}
+@media (max-width:520px){.gm-grid{grid-template-columns:1fr}}
+
+/* ---------- Responsive ---------- */
+@media (max-width:1080px){
+  .layout{grid-template-columns:1fr;gap:16px;padding:14px}
+  .preview-pane{position:static;max-height:none}
+  .step-body{max-height:none}
+  .mtabs{display:flex;gap:6px;padding:8px 12px;background:#fffdf9;border-bottom:1px solid var(--line)}
+  .mtabs button{flex:1;padding:10px;border-radius:10px;font-weight:600;font-size:14px;border:1px solid var(--line)}
+  .mtabs button.on{background:var(--maroon);color:#fff;border-color:transparent}
+  body.view-preview .form-pane{display:none}
+  body.view-edit .preview-pane{display:none}
+}
+@media (max-width:520px){
+  .grid2,.grid3{grid-template-columns:1fr}
+  .doc-head{flex-direction:column;text-align:center}
+  .grid-d{grid-template-columns:1fr}
+  .item .k{min-width:96px}
+  .brand small{display:none}
+}
+@media print{
+  .appbar,.form-pane,.preview-bar,.mtabs,.step-nav,#toast,.modal{display:none !important}
+  body{background:#fff}
+  .layout{display:block;padding:0;max-width:none}
+  .pane{box-shadow:none;border:0}
+  .preview-pane{position:static;max-height:none;padding:0}
+  .preview-scroll{background:#fff;padding:0;overflow:visible}
+  #docScale{transform:none !important}
+  #doc{box-shadow:none;width:100%}
+}
+</style>
+</head>
+<body class="lang-en view-edit">
+
+<!-- ================= APP BAR ================= -->
+<header class="appbar">
+  <div class="brand">
+    <div class="mark">स्व</div>
+    <div>
+      <h1 id="appName">Swayamvara</h1>
+      <small id="appTag">Marriage Portfolio · Biodata Builder</small>
+    </div>
+  </div>
+  <div class="tools">
+    <label class="lbl" for="langSelect" id="langLabel">Language</label>
+    <select id="langSelect" class="sel" aria-label="Language">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+      <option value="mr">मराठी</option>
+      <option value="sa">संस्कृतम्</option>
+    </select>
+    <button class="btn sm" id="tplBtn"><span class="ic">🪔</span><span id="tplBtnTxt">Templates</span></button>
+    <button class="btn sm" id="moreBtn"><span class="ic">⋯</span><span id="moreBtnTxt">More</span></button>
+    <button class="btn sm ghost" id="resetBtn" title="Reset"><span class="ic">↺</span></button>
+  </div>
+</header>
+
+<div class="ro-banner" id="roBanner" hidden>
+  <span>🔒 <span id="roBannerTxt">You are viewing a shared portfolio (read-only).</span></span>
+  <button class="btn sm gold" id="roMakeOwn">Create my own</button>
+</div>
+
+<!-- ================= LAYOUT ================= -->
+<div class="layout">
+
+  <!-- ---------- FORM PANE ---------- -->
+  <section class="pane form-pane" aria-label="Editor">
+    <div class="mtabs">
+      <button id="tabEdit" class="on">✎ Edit</button>
+      <button id="tabPreview">👁 Preview</button>
+    </div>
+    <nav class="stepper" id="stepper" aria-label="Steps"></nav>
+    <div class="step-body" id="stepHost"></div>
+    <div class="step-nav">
+      <button class="btn" id="navPrev">← Back</button>
+      <span class="mid" id="navMid"></span>
+      <button class="btn primary" id="navNext">Next →</button>
+    </div>
+  </section>
+
+  <!-- ---------- PREVIEW PANE ---------- -->
+  <section class="pane preview-pane" aria-label="Preview">
+    <div class="preview-bar">
+      <span class="lbl" id="previewLbl">Live preview · A4</span>
+      <span class="grow"></span>
+      <button class="btn sm" id="btnPrint"><span class="ic">🖨</span>Print</button>
+      <button class="btn sm" id="btnPdf"><span class="ic">📄</span>PDF</button>
+      <button class="btn sm" id="btnPng"><span class="ic">🖼</span>PNG</button>
+      <button class="btn sm" id="btnJpg"><span class="ic">🖼</span>JPG</button>
+      <button class="btn sm" id="btnDocx"><span class="ic">📝</span>DOCX</button>
+      <button class="btn sm" id="btnPptx"><span class="ic">📊</span>PPT</button>
+      <button class="btn sm primary" id="btnEmail"><span class="ic">✉</span>Email</button>
+      <button class="btn sm gold" id="btnShare"><span class="ic">➤</span>Share</button>
+    </div>
+    <div class="preview-scroll">
+      <div id="docScale"><div id="doc" data-tpl="patta"></div></div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= TEMPLATE MODAL ================= -->
+<div class="modal" id="tplModal" role="dialog" aria-modal="true" aria-labelledby="tplTitle">
+  <div class="sheet">
+    <div class="mhead">
+      <h3 id="tplTitle">Template library</h3>
+      <button class="x" id="tplClose" aria-label="Close">×</button>
+    </div>
+    <div class="mbody">
+      <div class="tpl-grid" id="tplGrid"></div>
+      <div class="pickers">
+        <div class="grp">
+          <b id="accentLbl">Accent</b>
+          <div class="swatches" id="accentSwatches"></div>
+        </div>
+        <div class="grp">
+          <b id="fontLbl">Typeface</b>
+          <select id="fontSelect" class="sel">
+            <option value="serif">Classic Serif</option>
+            <option value="devanagari">Devanagari Serif</option>
+            <option value="sans">Modern Sans</option>
+          </select>
+        </div>
+        <div class="grp">
+          <b id="invLbl">Invocation</b>
+          <label class="switch" style="border:0;padding:0"><input type="checkbox" id="invocationToggle"><span class="lab">श्री गणेशाय नमः</span></label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= EMAIL MODAL ================= -->
+<div class="modal" id="emailModal" role="dialog" aria-modal="true" aria-labelledby="emailTitle">
+  <div class="sheet" style="max-width:520px">
+    <div class="mhead">
+      <h3 id="emailTitle">Send by email</h3>
+      <button class="x" id="emailClose" aria-label="Close">×</button>
+    </div>
+    <div class="mbody">
+      <div class="emfield">
+        <label id="emailToLbl" for="emailTo">Recipient email(s)</label>
+        <input id="emailTo" type="text" placeholder="name@example.com, family@example.com" />
+      </div>
+      <div class="emfield">
+        <label id="emailSubLbl" for="emailSub">Subject</label>
+        <input id="emailSub" type="text" />
+      </div>
+      <div class="emfield">
+        <label id="emailMsgLbl" for="emailMsg">Message</label>
+        <textarea id="emailMsg" rows="3"></textarea>
+      </div>
+      <button class="btn primary" id="emailSend" style="width:100%;justify-content:center"><span class="ic">✉</span><span id="emailSendTxt">Download &amp; open mail</span></button>
+      <div class="note" id="emailNote"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= OPTIONAL EXTRAS ================= -->
+<div class="modal" id="moreModal" role="dialog" aria-modal="true" aria-labelledby="moreTitle">
+  <div class="sheet" style="max-width:640px">
+    <div class="mhead">
+      <h3 id="moreTitle">Optional extras</h3>
+      <button class="x" id="moreClose" aria-label="Close">×</button>
+    </div>
+    <div class="mbody">
+
+      <div class="more-sec">
+        <h4 id="hSaveLoad">Save &amp; load data</h4>
+        <p class="hint" id="saveLoadNote"></p>
+        <div class="row" style="margin-top:10px">
+          <button class="btn sm" id="btnSaveJson">💾 <span id="btnSaveJsonTxt">Save data (.json)</span></button>
+          <button class="btn sm" id="btnLoadJson">📂 <span id="btnLoadJsonTxt">Load data (.json)</span></button>
+          <input type="file" id="jsonInput" accept="application/json,.json" hidden>
+        </div>
+      </div>
+
+      <hr class="more-hr">
+
+      <div class="more-sec">
+        <h4 id="hShare">Shareable link (read-only)</h4>
+        <label class="switch" style="border:0;padding:0;background:none"><input type="checkbox" id="sharePhotos"><span class="lab" id="sharePhotosLbl">Include photos (larger link)</span></label>
+        <div class="row" style="margin-top:10px">
+          <button class="btn sm primary" id="btnMakeLink">🔗 <span id="makeLinkTxt">Create link</span></button>
+          <button class="btn sm" id="btnOpenLink">👁 <span id="openLinkTxt">Open read-only</span></button>
+        </div>
+        <input id="shareLinkOut" class="sel" style="width:100%;margin-top:10px;display:none" readonly>
+        <p class="hint" id="shareNote"></p>
+      </div>
+
+      <hr class="more-hr">
+
+      <div class="more-sec">
+        <h4 id="hGuna">Kundli matching (Guna Milan)</h4>
+        <p class="hint" id="gmNote"></p>
+        <div class="gm-grid">
+          <div>
+            <div class="gm-h" id="gmBoyLbl">Groom</div>
+            <div class="field"><label id="gmBNameLbl" for="gmBName">Name</label><input id="gmBName" type="text"></div>
+            <div class="field"><label id="gmBNakLbl" for="gmBNak">Nakshatra</label><select id="gmBNak"></select></div>
+          </div>
+          <div>
+            <div class="gm-h" id="gmGirlLbl">Bride</div>
+            <div class="field"><label id="gmGNameLbl" for="gmGName">Name</label><input id="gmGName" type="text"></div>
+            <div class="field"><label id="gmGNakLbl" for="gmGNak">Nakshatra</label><select id="gmGNak"></select></div>
+          </div>
+        </div>
+        <button class="btn primary" id="btnGuna" style="margin-top:6px">🧮 <span id="gunaBtnTxt">Calculate</span></button>
+        <div id="gunaResult" class="guna-result" hidden></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="busy"><div style="text-align:center"><div class="spinner"></div><div class="txt" id="busyTxt">Working…</div></div></div>
+<div id="toast" role="status"></div>
+
+<!-- ================= LIBRARIES (CDN) ================= -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.8.2/docx.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+
+<script>
+/* ============================================================
+   SWAYAMVARA (स्वयंवर) — Marriage Portfolio Builder
+   Pure client-side. No server, no build step.
+   ------------------------------------------------------------
+   EMAIL: fill in the EMAILJS block below to send mail directly.
+   Without keys the app falls back to "download PDF + open your
+   mail client" (mailto), which works everywhere.
+   ============================================================ */
+
+const EMAILJS = {
+  enabled: false,          // set true after filling these
+  publicKey: "YOUR_PUBLIC_KEY",
+  serviceId: "YOUR_SERVICE_ID",
+  templateId: "YOUR_TEMPLATE_ID",
+  // In your EmailJS template, use variables: {{to_email}}, {{subject}}, {{message}}
+  // and attach the PDF manually there, or use a paid plan for attachments.
+};
+
+/* ============================================================
+   1. i18n
+   ============================================================ */
+const I18N = {
+  en: {
+    appName:"Swayamvara", appTag:"Marriage Portfolio · Biodata Builder",
+    langLabel:"Language", docLang:"Document language", templates:"Templates", reset:"Reset all",
+    print:"Print", pdf:"PDF", png:"PNG", jpg:"JPG", docx:"DOCX", pptx:"PPT", email:"Email", share:"Share",
+    edit:"Edit", preview:"Preview", back:"Back", next:"Next", finish:"Finish",
+    livePreview:"Live preview · A4", templateLib:"Template library", accent:"Accent", typeface:"Typeface",
+    invocation:"Invocation", close:"Close", sendByEmail:"Send by email",
+    recipient:"Recipient email(s)", subject:"Subject", message:"Message",
+    downloadOpenMail:"Download & open mail", sendNow:"Send now",
+    emailNote:"Your PDF is saved to your device and your mail app opens with the message ready — just attach the saved PDF and send. (Add EmailJS keys in the code for one-click sending.)",
+    stepOf:(a,b)=>`Step ${a} of ${b}`, docFooter:"Created with स्वयंवर · Swayamvara",
+    resetConfirm:"Clear all entered data and start fresh?",
+    toastSaved:"Saved to this device", toastDownloaded:"Downloaded", toastReady:"Ready",
+    busyPdf:"Building your PDF…", busyImg:"Rendering image…", busyDocx:"Building Word file…",
+    busyPptx:"Building presentation…", busyMail:"Preparing your email…",
+    libMissing:"A download library could not load. Please check your internet connection and try again.",
+    emptyDoc:"Start filling the form — your portfolio preview will appear here.",
+    primaryPhoto:"Primary photo", addPhoto:"Add photo", removePhoto:"Remove", photoHint:"JPG/PNG. First photo is used as the profile photo.",
+    required:"This field is required", invalidEmail:"Enter a valid email",
+    // steps
+    step1:"Basics", step2:"Family", step3:"Education & Career", step4:"Horoscope & Community",
+    step5:"Lifestyle", step6:"Preferences", step7:"Photos", step8:"Contact & Preview",
+    step1s:"Name, birth details and physical attributes.",
+    step2s:"Parents, siblings and family background.",
+    step3s:"Qualifications, work and income.",
+    step4s:"Religion, community and horoscope details.",
+    step5s:"Daily habits, interests and about you.",
+    step6s:"What you look for in a life partner.",
+    step7s:"Add more photographs to your portfolio.",
+    step8s:"Contact details, privacy and final checks.",
+    // sections
+    secPersonal:"Personal details", secPhysical:"Physical attributes", secFamily:"Family details",
+    secEducation:"Education", secCareer:"Profession & income", secCommunity:"Religion & community",
+    secHoroscope:"Horoscope details", secLifestyle:"Lifestyle", secAbout:"About me",
+    secPreferences:"Partner preferences", secContact:"Contact details", secPhotos:"Additional photos",
+    // field labels
+    f_name:"Full name", f_dob:"Date of birth", f_tob:"Time of birth", f_pob:"Place of birth",
+    f_age:"Age", f_height:"Height", f_weight:"Weight", f_blood:"Blood group", f_complexion:"Complexion",
+    f_maritalStatus:"Marital status", f_motherTongue:"Mother tongue", f_gotra:"Gotra",
+    f_religion:"Religion", f_caste:"Caste", f_subCaste:"Sub-caste", f_community:"Community",
+    f_manglik:"Manglik", f_rashi:"Rashi (moon sign)", f_nakshatra:"Nakshatra", f_gana:"Gana", f_nadi:"Nadi",
+    f_kundli:"Birth chart / Kundli",
+    f_fatherName:"Father's name", f_fatherOcc:"Father's occupation", f_motherName:"Mother's name",
+    f_motherOcc:"Mother's occupation", f_brothers:"Brothers", f_sisters:"Sisters",
+    f_familyType:"Family type", f_familyValues:"Family values", f_nativePlace:"Native place (mool gaon)",
+    f_familyNote:"Family background",
+    f_qualification:"Highest qualification", f_degree:"Degree(s)", f_institution:"Institution",
+    f_year:"Year of passing", f_occupation:"Occupation", f_jobTitle:"Job title / designation",
+    f_employer:"Employer / company", f_workCity:"Work city", f_experience:"Years of experience",
+    f_income:"Annual income", f_businessType:"Employment type",
+    f_diet:"Diet", f_smoking:"Smoking", f_drinking:"Drinking", f_hobbies:"Hobbies & interests",
+    f_languagesSpoken:"Languages spoken", f_aboutMe:"About me",
+    f_prefAge:"Preferred age", f_prefHeight:"Preferred height", f_prefEducation:"Preferred education",
+    f_prefProfession:"Preferred profession", f_prefIncome:"Preferred income", f_prefCommunity:"Community preference",
+    f_prefLocation:"Location preference", f_prefDiet:"Diet preference", f_prefOther:"Other expectations",
+    f_contactPerson:"Contact person", f_phone:"Phone", f_whatsapp:"WhatsApp", f_emailAddr:"Email", f_city:"City",
+    f_showIncome:"Show income in shared copy", f_showContact:"Show contact details in shared copy",
+    f_showHoroscope:"Show horoscope details",
+    // options
+    neverMarried:"Never married", divorced:"Divorced", widowed:"Widowed", awaiting:"Awaiting divorce",
+    jointFamily:"Joint family", nuclearFamily:"Nuclear family",
+    traditional:"Traditional", moderate:"Moderate", liberal:"Liberal",
+    manglikYes:"Manglik", manglikNo:"Non-Manglik", manglikAnshik:"Anshik (partial)", manglikDontKnow:"Don't know",
+    pureVeg:"Pure vegetarian", egg:"Eggetarian", nonVeg:"Non-vegetarian", vegan:"Vegan",
+    no:"No", occasionally:"Occasionally", yes:"Yes",
+    salaried:"Salaried", selfEmployed:"Self-employed", business:"Business owner", notWorking:"Not working / student",
+    dev:"Dev", manushya:"Manushya", rakshas:"Rakshas", dontKnow:"Don't know",
+    // templates
+    tpl_patta:"Marathi Patta", tpl_rajwadi:"Royal Rajwadi", tpl_minimal:"Elegant Minimal",
+    tpl_floral:"Floral Pastel", tpl_corporate:"Modern Corporate", tpl_temple:"Temple Gold",
+    tpl_peacock:"Peacock Motif", tpl_ivory:"Classic Ivory",
+  },
+  hi: {
+    appName:"स्वयंवर", appTag:"विवाह परिचय · बायोडाटा बनाएँ",
+    langLabel:"भाषा", docLang:"दस्तावेज़ की भाषा", templates:"टेम्पलेट", reset:"सब रीसेट करें",
+    print:"प्रिंट", pdf:"PDF", png:"PNG", jpg:"JPG", docx:"DOCX", pptx:"PPT", email:"ईमेल", share:"शेयर",
+    edit:"संपादन", preview:"पूर्वावलोकन", back:"पीछे", next:"आगे", finish:"पूर्ण करें",
+    livePreview:"लाइव पूर्वावलोकन · A4", templateLib:"टेम्पलेट लाइब्रेरी", accent:"रंग", typeface:"फ़ॉन्ट",
+    invocation:"मंगलाचरण", close:"बंद करें", sendByEmail:"ईमेल से भेजें",
+    recipient:"प्राप्तकर्ता ईमेल", subject:"विषय", message:"संदेश",
+    downloadOpenMail:"डाउनलोड करें और मेल खोलें", sendNow:"अभी भेजें",
+    emailNote:"आपकी PDF आपके डिवाइस में सहेज दी जाएगी और आपका मेल ऐप तैयार संदेश के साथ खुल जाएगा — बस सहेजी गई PDF संलग्न करें और भेजें। (एक-क्लिक भेजने हेतु कोड में EmailJS कीज़ जोड़ें।)",
+    stepOf:(a,b)=>`चरण ${a} / ${b}`, docFooter:"स्वयंवर के साथ निर्मित",
+    resetConfirm:"सारा भरा हुआ डेटा हटाकर नए सिरे से शुरू करें?",
+    toastSaved:"इस डिवाइस में सहेजा गया", toastDownloaded:"डाउनलोड हो गया", toastReady:"तैयार",
+    busyPdf:"आपकी PDF बन रही है…", busyImg:"चित्र बन रहा है…", busyDocx:"Word फ़ाइल बन रही है…",
+    busyPptx:"प्रस्तुति बन रही है…", busyMail:"आपका ईमेल तैयार हो रहा है…",
+    libMissing:"डाउनलोड लाइब्रेरी लोड नहीं हो सकी। कृपया इंटरनेट कनेक्शन जाँचें और पुनः प्रयास करें।",
+    emptyDoc:"फ़ॉर्म भरना शुरू करें — आपका परिचय यहाँ दिखने लगेगा।",
+    primaryPhoto:"मुख्य फ़ोटो", addPhoto:"फ़ोटो जोड़ें", removePhoto:"हटाएँ", photoHint:"JPG/PNG। पहली फ़ोटो प्रोफ़ाइल फ़ोटो बनेगी।",
+    required:"यह जानकारी आवश्यक है", invalidEmail:"मान्य ईमेल दर्ज करें",
+    step1:"मूल जानकारी", step2:"परिवार", step3:"शिक्षा व करियर", step4:"कुंडली व समाज",
+    step5:"जीवनशैली", step6:"अपेक्षाएँ", step7:"फ़ोटो", step8:"संपर्क व पूर्वावलोकन",
+    step1s:"नाम, जन्म विवरण और शारीरिक विवरण।",
+    step2s:"माता-पिता, भाई-बहन और पारिवारिक पृष्ठभूमि।",
+    step3s:"योग्यता, कार्य और आय।",
+    step4s:"धर्म, समाज और कुंडली विवरण।",
+    step5s:"दिनचर्या, रुचियाँ और आपके बारे में।",
+    step6s:"जीवनसाथी से क्या अपेक्षाएँ हैं।",
+    step7s:"अपने परिचय में और फ़ोटो जोड़ें।",
+    step8s:"संपर्क विवरण, गोपनीयता और अंतिम जाँच।",
+    secPersonal:"व्यक्तिगत विवरण", secPhysical:"शारीरिक विवरण", secFamily:"पारिवारिक विवरण",
+    secEducation:"शिक्षा", secCareer:"व्यवसाय व आय", secCommunity:"धर्म व समाज",
+    secHoroscope:"कुंडली विवरण", secLifestyle:"जीवनशैली", secAbout:"अपने बारे में",
+    secPreferences:"जीवनसाथी अपेक्षाएँ", secContact:"संपर्क विवरण", secPhotos:"अतिरिक्त फ़ोटो",
+    f_name:"पूरा नाम", f_dob:"जन्म तिथि", f_tob:"जन्म समय", f_pob:"जन्म स्थान",
+    f_age:"आयु", f_height:"ऊँचाई", f_weight:"वज़न", f_blood:"रक्त समूह", f_complexion:"रंग",
+    f_maritalStatus:"वैवाहिक स्थिति", f_motherTongue:"मातृभाषा", f_gotra:"गोत्र",
+    f_religion:"धर्म", f_caste:"जाति", f_subCaste:"उपजाति", f_community:"समाज",
+    f_manglik:"मांगलिक", f_rashi:"राशि", f_nakshatra:"नक्षत्र", f_gana:"गण", f_nadi:"नाड़ी",
+    f_kundli:"जन्म कुंडली",
+    f_fatherName:"पिता का नाम", f_fatherOcc:"पिता का व्यवसाय", f_motherName:"माता का नाम",
+    f_motherOcc:"माता का व्यवसाय", f_brothers:"भाई", f_sisters:"बहनें",
+    f_familyType:"परिवार का प्रकार", f_familyValues:"पारिवारिक मूल्य", f_nativePlace:"मूल निवास",
+    f_familyNote:"पारिवारिक पृष्ठभूमि",
+    f_qualification:"उच्चतम योग्यता", f_degree:"डिग्री", f_institution:"संस्थान",
+    f_year:"उत्तीर्ण वर्ष", f_occupation:"व्यवसाय", f_jobTitle:"पद / पदनाम",
+    f_employer:"नियोक्ता / कंपनी", f_workCity:"कार्य नगर", f_experience:"अनुभव (वर्ष)",
+    f_income:"वार्षिक आय", f_businessType:"रोज़गार का प्रकार",
+    f_diet:"भोजन", f_smoking:"धूम्रपान", f_drinking:"मद्यपान", f_hobbies:"शौक व रुचियाँ",
+    f_languagesSpoken:"बोली जाने वाली भाषाएँ", f_aboutMe:"अपने बारे में",
+    f_prefAge:"अपेक्षित आयु", f_prefHeight:"अपेक्षित ऊँचाई", f_prefEducation:"अपेक्षित शिक्षा",
+    f_prefProfession:"अपेक्षित व्यवसाय", f_prefIncome:"अपेक्षित आय", f_prefCommunity:"समाज अपेक्षा",
+    f_prefLocation:"स्थान अपेक्षा", f_prefDiet:"भोजन अपेक्षा", f_prefOther:"अन्य अपेक्षाएँ",
+    f_contactPerson:"संपर्क व्यक्ति", f_phone:"फ़ोन", f_whatsapp:"व्हाट्सएप", f_emailAddr:"ईमेल", f_city:"शहर",
+    f_showIncome:"साझा प्रति में आय दिखाएँ", f_showContact:"साझा प्रति में संपर्क दिखाएँ",
+    f_showHoroscope:"कुंडली विवरण दिखाएँ",
+    neverMarried:"अविवाहित", divorced:"तलाकशुदा", widowed:"विधवा/विधुर", awaiting:"तलाक की प्रतीक्षा में",
+    jointFamily:"संयुक्त परिवार", nuclearFamily:"एकल परिवार",
+    traditional:"परंपरागत", moderate:"मध्यम", liberal:"उदार",
+    manglikYes:"मांगलिक", manglikNo:"अमांगलिक", manglikAnshik:"आंशिक मांगलिक", manglikDontKnow:"ज्ञात नहीं",
+    pureVeg:"शुद्ध शाकाहारी", egg:"अंडाहारी", nonVeg:"मांसाहारी", vegan:"वीगन",
+    no:"नहीं", occasionally:"कभी-कभी", yes:"हाँ",
+    salaried:"नौकरीपेशा", selfEmployed:"स्व-रोज़गार", business:"व्यवसायी", notWorking:"नहीं कार्यरत / छात्र",
+    dev:"देव", manushya:"मनुष्य", rakshas:"राक्षस", dontKnow:"ज्ञात नहीं",
+    tpl_patta:"मराठी पाटा", tpl_rajwadi:"राजवाड़ी", tpl_minimal:"सरल सुरुचिपूर्ण",
+    tpl_floral:"पुष्प कोमल", tpl_corporate:"आधुनिक कॉर्पोरेट", tpl_temple:"मंदिर स्वर्ण",
+    tpl_peacock:"मयूर", tpl_ivory:"क्लासिक हस्तीदंत",
+  },
+  mr: {
+    appName:"स्वयंवर", appTag:"विवाह परिचय · बायोडाटा तयार करा",
+    langLabel:"भाषा", docLang:"दस्तऐवजाची भाषा", templates:"टेम्पलेट", reset:"सर्व रीसेट करा",
+    print:"प्रिंट", pdf:"PDF", png:"PNG", jpg:"JPG", docx:"DOCX", pptx:"PPT", email:"ईमेल", share:"शेअर",
+    edit:"संपादन", preview:"पूर्वावलोकन", back:"मागे", next:"पुढे", finish:"पूर्ण करा",
+    livePreview:"लाइव्ह पूर्वावलोकन · A4", templateLib:"टेम्पलेट संग्रह", accent:"रंग", typeface:"फॉन्ट",
+    invocation:"मंगलाचरण", close:"बंद करा", sendByEmail:"ईमेलने पाठवा",
+    recipient:"प्राप्तकर्ता ईमेल", subject:"विषय", message:"संदेश",
+    downloadOpenMail:"डाउनलोड करा व मेल उघडा", sendNow:"आता पाठवा",
+    emailNote:"तुमची PDF तुमच्या डिव्हाइसवर सेव्ह होईल आणि तुमचे मेल ॲप तयार संदेशासह उघडेल — फक्त सेव्ह केलेली PDF जोडा आणि पाठवा. (एका-क्लिक पाठवण्यासाठी कोडमध्ये EmailJS कीज भरा.)",
+    stepOf:(a,b)=>`पायरी ${a} / ${b}`, docFooter:"स्वयंवर सह तयार",
+    resetConfirm:"सर्व भरलेली माहिती हटवून नव्याने सुरू करायचे?",
+    toastSaved:"या डिव्हाइसवर सेव्ह झाले", toastDownloaded:"डाउनलोड झाले", toastReady:"तयार",
+    busyPdf:"तुमची PDF तयार होत आहे…", busyImg:"चित्र तयार होत आहे…", busyDocx:"Word फाइल तयार होत आहे…",
+    busyPptx:"सादरीकरण तयार होत आहे…", busyMail:"तुमचा ईमेल तयार होत आहे…",
+    libMissing:"डाउनलोड लायब्ररी लोड झाली नाही. कृपया इंटरनेट कनेक्शन तपासा व पुन्हा प्रयत्न करा.",
+    emptyDoc:"फॉर्म भरणे सुरू करा — तुमचा परिचय येथे दिसेल.",
+    primaryPhoto:"मुख्य फोटो", addPhoto:"फोटो जोडा", removePhoto:"काढा", photoHint:"JPG/PNG. पहिला फोटो प्रोफाइल फोटो म्हणून वापरला जाईल.",
+    required:"ही माहिती आवश्यक आहे", invalidEmail:"वैध ईमेल टाका",
+    step1:"मूलभूत माहिती", step2:"कुटुंब", step3:"शिक्षण व करिअर", step4:"पत्रिका व समाज",
+    step5:"जीवनशैली", step6:"अपेक्षा", step7:"फोटो", step8:"संपर्क व पूर्वावलोकन",
+    step1s:"नाव, जन्म तपशील व शारीरिक माहिती.",
+    step2s:"आई-वडील, भावंडे व कौटुंबिक पार्श्वभूमी.",
+    step3s:"पात्रता, काम व उत्पन्न.",
+    step4s:"धर्म, समाज व पत्रिका तपशील.",
+    step5s:"दिनचर्या, आवडी व तुमच्याबद्दल.",
+    step6s:"जोडीदाराकडून काय अपेक्षा आहेत.",
+    step7s:"तुमच्या परिचयात अधिक फोटो जोडा.",
+    step8s:"संपर्क तपशील, गोपनीयता व अंतिम तपासणी.",
+    secPersonal:"वैयक्तिक माहिती", secPhysical:"शारीरिक माहिती", secFamily:"कौटुंबिक माहिती",
+    secEducation:"शिक्षण", secCareer:"व्यवसाय व उत्पन्न", secCommunity:"धर्म व समाज",
+    secHoroscope:"पत्रिका तपशील", secLifestyle:"जीवनशैली", secAbout:"माझ्याबद्दल",
+    secPreferences:"जोडीदार अपेक्षा", secContact:"संपर्क तपशील", secPhotos:"अतिरिक्त फोटो",
+    f_name:"पूर्ण नाव", f_dob:"जन्म तारीख", f_tob:"जन्म वेळ", f_pob:"जन्म ठिकाण",
+    f_age:"वय", f_height:"उंची", f_weight:"वजन", f_blood:"रक्तगट", f_complexion:"वर्ण",
+    f_maritalStatus:"वैवाहिक स्थिती", f_motherTongue:"मातृभाषा", f_gotra:"गोत्र",
+    f_religion:"धर्म", f_caste:"जात", f_subCaste:"उपजात", f_community:"समाज",
+    f_manglik:"मांगलिक", f_rashi:"राशी", f_nakshatra:"नक्षत्र", f_gana:"गण", f_nadi:"नाडी",
+    f_kundli:"जन्मपत्रिका",
+    f_fatherName:"वडिलांचे नाव", f_fatherOcc:"वडिलांचा व्यवसाय", f_motherName:"आईचे नाव",
+    f_motherOcc:"आईचा व्यवसाय", f_brothers:"भाऊ", f_sisters:"बहिणी",
+    f_familyType:"कुटुंबाचा प्रकार", f_familyValues:"कौटुंबिक मूल्ये", f_nativePlace:"मूळ गाव",
+    f_familyNote:"कौटुंबिक पार्श्वभूमी",
+    f_qualification:"उच्चतम पात्रता", f_degree:"पदवी", f_institution:"संस्था",
+    f_year:"उत्तीर्ण वर्ष", f_occupation:"व्यवसाय", f_jobTitle:"पद / हुद्दा",
+    f_employer:"नियोक्ता / कंपनी", f_workCity:"कामाचे शहर", f_experience:"अनुभव (वर्षे)",
+    f_income:"वार्षिक उत्पन्न", f_businessType:"रोजगाराचा प्रकार",
+    f_diet:"आहार", f_smoking:"धूम्रपान", f_drinking:"मद्यपान", f_hobbies:"छंद व आवडी",
+    f_languagesSpoken:"बोलल्या जाणाऱ्या भाषा", f_aboutMe:"माझ्याबद्दल",
+    f_prefAge:"अपेक्षित वय", f_prefHeight:"अपेक्षित उंची", f_prefEducation:"अपेक्षित शिक्षण",
+    f_prefProfession:"अपेक्षित व्यवसाय", f_prefIncome:"अपेक्षित उत्पन्न", f_prefCommunity:"समाज अपेक्षा",
+    f_prefLocation:"ठिकाण अपेक्षा", f_prefDiet:"आहार अपेक्षा", f_prefOther:"इतर अपेक्षा",
+    f_contactPerson:"संपर्क व्यक्ती", f_phone:"फोन", f_whatsapp:"व्हॉट्सअ‍ॅप", f_emailAddr:"ईमेल", f_city:"शहर",
+    f_showIncome:"शेअर प्रतीत उत्पन्न दाखवा", f_showContact:"शेअर प्रतीत संपर्क दाखवा",
+    f_showHoroscope:"पत्रिका तपशील दाखवा",
+    neverMarried:"अविवाहित", divorced:"घटस्फोटित", widowed:"विधवा/विधुर", awaiting:"घटस्फोट प्रतीक्षेत",
+    jointFamily:"संयुक्त कुटुंब", nuclearFamily:"विभक्त कुटुंब",
+    traditional:"पारंपरिक", moderate:"मध्यम", liberal:"उदार",
+    manglikYes:"मांगलिक", manglikNo:"अमांगलिक", manglikAnshik:"अंशतः मांगलिक", manglikDontKnow:"माहीत नाही",
+    pureVeg:"शुद्ध शाकाहारी", egg:"अंडाशाहारी", nonVeg:"मांसाहारी", vegan:"व्हीगन",
+    no:"नाही", occasionally:"कधीकधी", yes:"होय",
+    salaried:"नोकरदार", selfEmployed:"स्वयं-रोजगार", business:"व्यावसायिक", notWorking:"कार्यरत नाही / विद्यार्थी",
+    dev:"देव", manushya:"मनुष्य", rakshas:"राक्षस", dontKnow:"माहीत नाही",
+    tpl_patta:"मराठी पाटा", tpl_rajwadi:"राजवाडा", tpl_minimal:"साधे सुंदर",
+    tpl_floral:"फुलांचा कोमल", tpl_corporate:"आधुनिक कॉर्पोरेट", tpl_temple:"मंदिर सुवर्ण",
+    tpl_peacock:"मोर", tpl_ivory:"क्लासिक हस्तिदंत",
+  },
+  sa: {
+    appName:"स्वयंवरः", appTag:"विवाहपरिचयः · परिचयपत्रनिर्माणम्",
+    langLabel:"भाषा", docLang:"पत्रभाषा", templates:"प्रारूपाणि", reset:"सर्वं पुनःस्थापयतु",
+    print:"मुद्रणम्", pdf:"PDF", png:"PNG", jpg:"JPG", docx:"DOCX", pptx:"PPT", email:"विद्युत्पत्रम्", share:"प्रेषणम्",
+    edit:"संपादनम्", preview:"पूर्वदर्शनम्", back:"पृष्ठतः", next:"अग्रे", finish:"समाप्तम्",
+    livePreview:"सद्यःपूर्वदर्शनम् · A4", templateLib:"प्रारूपसंग्रहः", accent:"वर्णः", typeface:"लिपिः",
+    invocation:"मङ्गलाचरणम्", close:"पिधानम्", sendByEmail:"विद्युत्पत्रेण प्रेषयतु",
+    recipient:"प्राप्तेः विद्युत्पत्रम्", subject:"विषयः", message:"सन्देशः",
+    downloadOpenMail:"अवतरणं कृत्वा पत्रम् उद्घाटयतु", sendNow:"इदानीं प्रेषयतु",
+    emailNote:"भवतः PDF यन्त्रे रक्ष्यते, भवतः पत्रकार्यक्रमः सज्जसन्देशेन सह उद्घाट्यते — रक्षितां PDF संयोज्य प्रेषयतु। (एकक्लिकप्रेषणाय कोडे EmailJS कुञ्चिकाः योजयतु।)",
+    stepOf:(a,b)=>`चरणम् ${a} / ${b}`, docFooter:"स्वयंवरेण निर्मितम्",
+    resetConfirm:"सर्वं लिखितं दत्तांशं अपनीय पुनः आरभ्यते?",
+    toastSaved:"यन्त्रे रक्षितम्", toastDownloaded:"अवतरितम्", toastReady:"सज्जम्",
+    busyPdf:"भवतः PDF निर्मीयते…", busyImg:"चित्रं निर्मीयते…", busyDocx:"Word सञ्चिका निर्मीयते…",
+    busyPptx:"प्रदर्शनं निर्मीयते…", busyMail:"भवतः पत्रं सज्जीक्रियते…",
+    libMissing:"अवतरणग्रन्थालयः न आरोपितः। कृपया जालसम्पर्कं परीक्ष्य पुनः प्रयत्नं करोतु।",
+    emptyDoc:"पत्रकं पूरयितुं आरभताम् — भवतः परिचयः अत्र दृश्यते।",
+    primaryPhoto:"मुख्यचित्रम्", addPhoto:"चित्रं योजयतु", removePhoto:"अपनयतु", photoHint:"JPG/PNG। प्रथमं चित्रं प्रोफ़ाइलचित्रं भवति।",
+    required:"एतत् आवश्यकम्", invalidEmail:"मान्यं विद्युत्पत्रम् लिखतु",
+    step1:"मूलपरिचयः", step2:"कुटुम्बः", step3:"शिक्षा च वृत्तिः", step4:"जन्मकुण्डली च समाजः",
+    step5:"जीवनशैली", step6:"अपेक्षाः", step7:"चित्राणि", step8:"सम्पर्कः च पूर्वदर्शनम्",
+    step1s:"नाम, जन्मविवरणं शारीरिकं च।",
+    step2s:"पितरौ, भ्रातरः भगिन्यः कुटुम्बपृष्ठभूमिः च।",
+    step3s:"योग्यता, कर्म आयश्च।",
+    step4s:"धर्मः, समाजः जन्मकुण्डली च।",
+    step5s:"दिनचर्या, रुचयः भवच्च विषये च।",
+    step6s:"जीवनसहचरात् का अपेक्षाः।",
+    step7s:"भवतः परिचये अधिकचित्राणि योजयतु।",
+    step8s:"सम्पर्कविवरणं, गोपनीयता, अन्तिमपरीक्षा च।",
+    secPersonal:"व्यक्तिगतविवरणम्", secPhysical:"शारीरिकविवरणम्", secFamily:"कौटुम्बिकविवरणम्",
+    secEducation:"शिक्षा", secCareer:"वृत्तिः च आयः", secCommunity:"धर्मः च समाजः",
+    secHoroscope:"जन्मकुण्डलीविवरणम्", secLifestyle:"जीवनशैली", secAbout:"मम विषये",
+    secPreferences:"सहचर-अपेक्षाः", secContact:"सम्पर्कविवरणम्", secPhotos:"अतिरिक्तचित्राणि",
+    f_name:"पूर्णनाम", f_dob:"जन्मदिनाङ्कः", f_tob:"जन्मसमयः", f_pob:"जन्मस्थानम्",
+    f_age:"वयः", f_height:"उच्चता", f_weight:"भारः", f_blood:"रक्तसमूहः", f_complexion:"वर्णः",
+    f_maritalStatus:"वैवाहिकस्थितिः", f_motherTongue:"मातृभाषा", f_gotra:"गोत्रम्",
+    f_religion:"धर्मः", f_caste:"जातिः", f_subCaste:"उपजातिः", f_community:"समाजः",
+    f_manglik:"माङ्गलिकः", f_rashi:"राशिः", f_nakshatra:"नक्षत्रम्", f_gana:"गणः", f_nadi:"नाडी",
+    f_kundli:"जन्मकुण्डली",
+    f_fatherName:"पितुः नाम", f_fatherOcc:"पितुः वृत्तिः", f_motherName:"मातुः नाम",
+    f_motherOcc:"मातुः वृत्तिः", f_brothers:"भ्रातरः", f_sisters:"भगिन्यः",
+    f_familyType:"कुटुम्बप्रकारः", f_familyValues:"कुटुम्बमूल्यानि", f_nativePlace:"मूलस्थानम्",
+    f_familyNote:"कुटुम्बपृष्ठभूमिः",
+    f_qualification:"उच्चतमयोग्यता", f_degree:"पदवी", f_institution:"संस्था",
+    f_year:"उत्तीर्णवर्षम्", f_occupation:"वृत्तिः", f_jobTitle:"पदम्",
+    f_employer:"नियोक्ता / संस्था", f_workCity:"कार्यनगरम्", f_experience:"अनुभवः (वर्षाणि)",
+    f_income:"वार्षिकायः", f_businessType:"आजीविकाप्रकारः",
+    f_diet:"आहारः", f_smoking:"धूम्रपानम्", f_drinking:"मद्यपानम्", f_hobbies:"रुचयः",
+    f_languagesSpoken:"भाषिताः भाषाः", f_aboutMe:"मम विषये",
+    f_prefAge:"अपेक्षितवयः", f_prefHeight:"अपेक्षितोच्चता", f_prefEducation:"अपेक्षितशिक्षा",
+    f_prefProfession:"अपेक्षितवृत्तिः", f_prefIncome:"अपेक्षितायः", f_prefCommunity:"समाजापेक्षा",
+    f_prefLocation:"स्थानापेक्षा", f_prefDiet:"आहारापेक्षा", f_prefOther:"अन्याः अपेक्षाः",
+    f_contactPerson:"सम्पर्कव्यक्तिः", f_phone:"दूरभाषः", f_whatsapp:"व्हाट्सप", f_emailAddr:"विद्युत्पत्रम्", f_city:"नगरम्",
+    f_showIncome:"सहभागिप्रतौ आयः दर्श्यताम्", f_showContact:"सहभागिप्रतौ सम्पर्कः दर्श्यताम्",
+    f_showHoroscope:"जन्मकुण्डली दर्श्यताम्",
+    neverMarried:"अविवाहितः", divorced:"विच्छिन्नविवाहः", widowed:"विधुरः", awaiting:"विच्छेदप्रतीक्षायाम्",
+    jointFamily:"संयुक्तकुटुम्बः", nuclearFamily:"पृथक्कुटुम्बः",
+    traditional:"पारम्परिकः", moderate:"मध्यमः", liberal:"उदारः",
+    manglikYes:"माङ्गलिकः", manglikNo:"अमाङ्गलिकः", manglikAnshik:"अंशतः माङ्गलिकः", manglikDontKnow:"न ज्ञायते",
+    pureVeg:"शुद्धशाकाहारी", egg:"अण्डाहारी", nonVeg:"मांसाहारी", vegan:"वीगन्",
+    no:"न", occasionally:"कदाचित्", yes:"आम्",
+    salaried:"वेतनभोगी", selfEmployed:"स्वयंरोजगारी", business:"व्यापारी", notWorking:"न कार्यरतः / विद्यार्थी",
+    dev:"देवः", manushya:"मनुष्यः", rakshas:"राक्षसः", dontKnow:"न ज्ञायते",
+    tpl_patta:"मराठी पाटा", tpl_rajwadi:"राजवाडा", tpl_minimal:"सरलसुन्दरम्",
+    tpl_floral:"पुष्पकोमलम्", tpl_corporate:"आधुनिकसंस्थात्मकम्", tpl_temple:"मन्दिरसुवर्णम्",
+    tpl_peacock:"मयूरः", tpl_ivory:"पुरातनहस्तिदन्तम्",
+  }
+};
+
+function tL(lang, key){
+  const d = I18N[lang] || I18N.en;
+  let v = d[key];
+  if (v === undefined) v = I18N.en[key];
+  if (v === undefined) v = key;
+  return v;
+}
+
+/* ============================================================
+   2. Templates
+   ============================================================ */
+const TEMPLATES = [
+  {id:"patta",     icon:"🪔", bg:"linear-gradient(135deg,#b3441e,#d98a2b)"},
+  {id:"rajwadi",   icon:"👑", bg:"linear-gradient(135deg,#5c1620,#b8860b)"},
+  {id:"minimal",   icon:"◻️", bg:"linear-gradient(135deg,#ffffff,#eeeeee)"},
+  {id:"floral",    icon:"🌸", bg:"linear-gradient(135deg,#e58bb0,#a8d5ba)"},
+  {id:"corporate", icon:"💼", bg:"linear-gradient(135deg,#0b3d4d,#0f6b63)"},
+  {id:"temple",    icon:"🛕", bg:"linear-gradient(135deg,#8a6110,#c99a3c)"},
+  {id:"peacock",   icon:"🦚", bg:"linear-gradient(135deg,#0b4f6c,#1b8a5a)"},
+  {id:"ivory",     icon:"📜", bg:"linear-gradient(135deg,#e9dcc0,#d8c49a)"},
+];
+const ACCENTS = ["","#b3441e","#8a1c2b","#c2547f","#0f6b63","#a97b12","#1b5e8a","#5a3ea8","#2e7d32","#333333"];
+
+/* ============================================================
+   3. Field schema
+   ============================================================ */
+const STEPS = [
+  { id:"basics", name:"step1", sub:"step1s", sections:[
+    { legend:"secPersonal", fields:[
+      {k:"name", l:"f_name", t:"text", req:true, ph:"e.g. Aarav Sharma"},
+      {k:"dob", l:"f_dob", t:"date", req:true},
+      {k:"tob", l:"f_tob", t:"time"},
+      {k:"pob", l:"f_pob", t:"text", ph:"e.g. Pune, Maharashtra"},
+      {k:"motherTongue", l:"f_motherTongue", t:"text", ph:"e.g. Marathi"},
+      {k:"maritalStatus", l:"f_maritalStatus", t:"select", opts:["neverMarried","divorced","widowed","awaiting"]},
+    ]},
+    { legend:"secPhysical", fields:[
+      {k:"height", l:"f_height", t:"text", ph:"e.g. 5 ft 8 in / 173 cm"},
+      {k:"weight", l:"f_weight", t:"text", ph:"e.g. 68 kg"},
+      {k:"blood", l:"f_blood", t:"select", opts:["A+","A-","B+","B-","O+","O-","AB+","AB-"]},
+      {k:"complexion", l:"f_complexion", t:"text", ph:"e.g. Fair"},
+    ]},
+  ]},
+  { id:"family", name:"step2", sub:"step2s", sections:[
+    { legend:"secFamily", fields:[
+      {k:"fatherName", l:"f_fatherName", t:"text"},
+      {k:"fatherOcc", l:"f_fatherOcc", t:"text"},
+      {k:"motherName", l:"f_motherName", t:"text"},
+      {k:"motherOcc", l:"f_motherOcc", t:"text"},
+      {k:"brothers", l:"f_brothers", t:"text", ph:"e.g. 1 elder, 0 younger"},
+      {k:"sisters", l:"f_sisters", t:"text", ph:"e.g. 0 elder, 1 younger"},
+      {k:"familyType", l:"f_familyType", t:"select", opts:["jointFamily","nuclearFamily"]},
+      {k:"familyValues", l:"f_familyValues", t:"select", opts:["traditional","moderate","liberal"]},
+      {k:"nativePlace", l:"f_nativePlace", t:"text", ph:"e.g. Kolhapur"},
+      {k:"familyNote", l:"f_familyNote", t:"textarea", full:true, ph:"A short note about your family"},
+    ]},
+  ]},
+  { id:"career", name:"step3", sub:"step3s", sections:[
+    { legend:"secEducation", fields:[
+      {k:"qualification", l:"f_qualification", t:"text", ph:"e.g. Post-graduate"},
+      {k:"degree", l:"f_degree", t:"text", ph:"e.g. M.Tech, Computer Engineering"},
+      {k:"institution", l:"f_institution", t:"text", ph:"e.g. COEP, Pune"},
+      {k:"year", l:"f_year", t:"text", ph:"e.g. 2019"},
+    ]},
+    { legend:"secCareer", fields:[
+      {k:"occupation", l:"f_occupation", t:"text", ph:"e.g. Software Engineer"},
+      {k:"jobTitle", l:"f_jobTitle", t:"text"},
+      {k:"employer", l:"f_employer", t:"text"},
+      {k:"workCity", l:"f_workCity", t:"text", ph:"e.g. Bengaluru"},
+      {k:"experience", l:"f_experience", t:"text", ph:"e.g. 4 years"},
+      {k:"businessType", l:"f_businessType", t:"select", opts:["salaried","selfEmployed","business","notWorking"]},
+      {k:"income", l:"f_income", t:"text", ph:"e.g. ₹12 lakh per annum", full:true},
+      {k:"showIncome", l:"f_showIncome", t:"toggle", sub:"f_income"},
+    ]},
+  ]},
+  { id:"horoscope", name:"step4", sub:"step4s", sections:[
+    { legend:"secCommunity", fields:[
+      {k:"religion", l:"f_religion", t:"text", ph:"e.g. Hindu"},
+      {k:"caste", l:"f_caste", t:"text"},
+      {k:"subCaste", l:"f_subCaste", t:"text"},
+      {k:"community", l:"f_community", t:"text"},
+      {k:"gotra", l:"f_gotra", t:"text"},
+      {k:"manglik", l:"f_manglik", t:"select", opts:["manglikYes","manglikNo","manglikAnshik","manglikDontKnow"]},
+    ]},
+    { legend:"secHoroscope", fields:[
+      {k:"rashi", l:"f_rashi", t:"text"},
+      {k:"nakshatra", l:"f_nakshatra", t:"text"},
+      {k:"gana", l:"f_gana", t:"select", opts:["dev","manushya","rakshas","dontKnow"]},
+      {k:"nadi", l:"f_nadi", t:"text"},
+      {k:"kundli", l:"f_kundli", t:"text", ph:"e.g. Available on request / PDF attached separately"},
+      {k:"showHoroscope", l:"f_showHoroscope", t:"toggle", sub:"f_kundli"},
+    ]},
+  ]},
+  { id:"lifestyle", name:"step5", sub:"step5s", sections:[
+    { legend:"secLifestyle", fields:[
+      {k:"diet", l:"f_diet", t:"select", opts:["pureVeg","egg","nonVeg","vegan"]},
+      {k:"smoking", l:"f_smoking", t:"select", opts:["no","occasionally","yes"]},
+      {k:"drinking", l:"f_drinking", t:"select", opts:["no","occasionally","yes"]},
+      {k:"languagesSpoken", l:"f_languagesSpoken", t:"text", ph:"e.g. Marathi, Hindi, English"},
+    ]},
+    { legend:"secAbout", fields:[
+      {k:"hobbies", l:"f_hobbies", t:"textarea", full:true, ph:"e.g. Reading, trekking, classical music"},
+      {k:"aboutMe", l:"f_aboutMe", t:"textarea", full:true, ph:"A few warm lines about yourself, your values and what matters to you"},
+    ]},
+  ]},
+  { id:"prefs", name:"step6", sub:"step6s", sections:[
+    { legend:"secPreferences", fields:[
+      {k:"prefAge", l:"f_prefAge", t:"text", ph:"e.g. 26–31 years"},
+      {k:"prefHeight", l:"f_prefHeight", t:"text"},
+      {k:"prefEducation", l:"f_prefEducation", t:"text"},
+      {k:"prefProfession", l:"f_prefProfession", t:"text"},
+      {k:"prefIncome", l:"f_prefIncome", t:"text"},
+      {k:"prefCommunity", l:"f_prefCommunity", t:"text"},
+      {k:"prefLocation", l:"f_prefLocation", t:"text"},
+      {k:"prefDiet", l:"f_prefDiet", t:"text"},
+      {k:"prefOther", l:"f_prefOther", t:"textarea", full:true},
+    ]},
+  ]},
+  { id:"photos", name:"step7", sub:"step7s", sections:[
+    { legend:"secPhotos", fields:[
+      {k:"__photos", l:"secPhotos", t:"photos", full:true},
+    ]},
+  ]},
+  { id:"contact", name:"step8", sub:"step8s", sections:[
+    { legend:"secContact", fields:[
+      {k:"contactPerson", l:"f_contactPerson", t:"text", ph:"e.g. Self / Father / Uncle"},
+      {k:"phone", l:"f_phone", t:"tel", ph:"+91 …"},
+      {k:"whatsapp", l:"f_whatsapp", t:"tel"},
+      {k:"emailAddr", l:"f_emailAddr", t:"email", validate:"email"},
+      {k:"city", l:"f_city", t:"text"},
+      {k:"showContact", l:"f_showContact", t:"toggle", sub:"f_phone"},
+    ]},
+  ]},
+];
+
+/* ============================================================
+   4. State
+   ============================================================ */
+const LS_KEY = "swayamvara.v1";
+const DEFAULT_STATE = {
+  lang:"en", docLang:"en", template:"patta", accent:"", font:"serif", invocation:true,
+  data:{}, photos:[], step:0,
+  showIncome:true, showContact:true, showHoroscope:true,
+};
+let state = loadState();
+let readOnly=false;   // true while viewing a shared read-only link
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return structuredClone(DEFAULT_STATE);
+    const s = JSON.parse(raw);
+    return Object.assign(structuredClone(DEFAULT_STATE), s, {data: s.data||{}, photos: s.photos||[]});
+  }catch(e){ return structuredClone(DEFAULT_STATE); }
+}
+let saveTimer=null;
+function saveState(){
+  if(readOnly) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){}
+  }, 250);
+}
+
+/* ============================================================
+   5. Helpers
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function toast(msg){ const el=$("#toast"); el.textContent=msg; el.classList.add("show"); clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove("show"),2200); }
+function busy(on,txt){ $("#busy").classList.toggle("on",!!on); if(txt) $("#busyTxt").textContent=txt; }
+function calcAge(dob){ if(!dob) return ""; const d=new Date(dob), n=new Date(); if(isNaN(d)) return ""; let a=n.getFullYear()-d.getFullYear(); const m=n.getMonth()-d.getMonth(); if(m<0||(m===0&&n.getDate()<d.getDate())) a--; return a>0&&a<130 ? a : ""; }
+function fmtDate(dob){ if(!dob) return ""; const d=new Date(dob); if(isNaN(d)) return dob; return d.toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"numeric"}); }
+function safeName(){ const n=(state.data.name||"Portfolio").trim().replace(/[^\p{L}\p{N}\s_-]/gu,"").replace(/\s+/g,"_"); return n||"Portfolio"; }
+function fileBase(ext){ return `${safeName()}_Biodata_${state.template}.${ext}`; }
+function saveBlob(blob, filename){
+  const a=document.createElement("a"); const url=URL.createObjectURL(blob);
+  a.href=url; a.download=filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(url); a.remove();},1000);
+}
+function dataURLtoBlob(durl){ const [h,b]=durl.split(","); const m=h.match(/:(.*?);/)[1]; const bin=atob(b); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:m}); }
+function dataURLtoU8(durl){ const b=durl.split(",")[1]; const bin=atob(b); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i); return arr; }
+function hasLib(name){ return typeof window[name] !== "undefined"; }
+
+/* ============================================================
+   6. Form rendering
+   ============================================================ */
+function renderStepper(){
+  const host=$("#stepper"); host.innerHTML="";
+  STEPS.forEach((s,i)=>{
+    const b=document.createElement("button");
+    b.className="step-chip"+(i===state.step?" active":"")+(i<state.step?" done":"");
+    b.innerHTML=`<span class="n">${i<state.step?"✓":i+1}</span><span>${esc(tL(state.lang,s.name))}</span>`;
+    b.onclick=()=>{ state.step=i; saveState(); renderAll(); };
+    host.appendChild(b);
+  });
+}
+
+function renderForm(){
+  const step = STEPS[state.step];
+  const host = $("#stepHost");
+  host.scrollTop = 0;
+  const L = state.lang;
+  let html = `<h2 class="step-title">${esc(tL(L,step.name))}</h2><p class="step-sub">${esc(tL(L,step.sub))}</p>`;
+  step.sections.forEach(sec=>{
+    html += `<fieldset><div class="legend">${esc(tL(L,sec.legend))}</div>`;
+    sec.fields.forEach(f=>{ html += fieldHTML(f,L); });
+    html += `</fieldset>`;
+  });
+  host.innerHTML = html;
+  bindFields();
+  $("#navMid").textContent = tL(L,"stepOf")(state.step+1, STEPS.length);
+  $("#navPrev").disabled = state.step===0;
+  $("#navNext").innerHTML = state.step===STEPS.length-1 ? esc(tL(L,"finish"))+" ✓" : esc(tL(L,"next"))+" →";
+  // photos
+  if(state.step===STEPS.findIndex(s=>s.id==="photos")) renderPhotoSlots();
+}
+
+function fieldHTML(f,L){
+  const id="fld_"+f.k;
+  const label=`<label for="${id}">${esc(tL(L,f.l))}${f.req?' <span style="color:#c0392b">*</span>':''}</label>`;
+  const err=`<div class="err-msg">${esc(tL(L,f.req?"required":"invalidEmail"))}</div>`;
+  if(f.t==="toggle"){
+    const on = f.k==="showIncome"?state.showIncome : f.k==="showContact"?state.showContact : f.k==="showHoroscope"?state.showHoroscope : true;
+    return `<div class="field"><label class="switch"><input type="checkbox" data-toggle="${f.k}" ${on?"checked":""}><span class="lab">${esc(tL(L,f.l))}</span></label></div>`;
+  }
+  if(f.t==="photos"){
+    return `<div class="field">
+      <label>${esc(tL(L,"primaryPhoto"))}</label>
+      <div class="photos" id="photoGrid"></div>
+      <p class="hint" style="font-size:12px;color:#8a7c6a;margin:8px 0 0">${esc(tL(L,"photoHint"))}</p>
+      <input type="file" id="photoInput" accept="image/*" multiple hidden>
+    </div>`;
+  }
+  if(f.t==="select"){
+    let opts=`<option value="">—</option>`;
+    f.opts.forEach(o=>{ opts+=`<option value="${esc(o)}" ${state.data[f.k]===o?"selected":""}>${esc(tL(L,o))}</option>`; });
+    return `<div class="field" data-fk="${f.k}">${label}<select id="${id}" data-k="${f.k}">${opts}</select>${err}</div>`;
+  }
+  if(f.t==="textarea"){
+    return `<div class="field" data-fk="${f.k}">${label}<textarea id="${id}" data-k="${f.k}" placeholder="${esc(f.ph||"")}">${esc(state.data[f.k]||"")}</textarea>${err}</div>`;
+  }
+  const type = f.t==="email"?"email":f.t==="tel"?"tel":f.t==="date"?"date":f.t==="time"?"time":"text";
+  return `<div class="field" data-fk="${f.k}">${label}<input id="${id}" data-k="${f.k}" type="${type}" value="${esc(state.data[f.k]||"")}" placeholder="${esc(f.ph||"")}">${err}</div>`;
+}
+
+function bindFields(){
+  $$("#stepHost [data-k]").forEach(el=>{
+    const k=el.dataset.k;
+    const handler=()=>{
+      state.data[k]=el.value;
+      const wrap=el.closest(".field");
+      if(wrap) wrap.classList.remove("invalid");
+      saveState(); renderDoc(); refreshProgress();
+    };
+    el.addEventListener("input",handler);
+    el.addEventListener("change",handler);
+  });
+  $$("#stepHost [data-toggle]").forEach(el=>{
+    el.addEventListener("change",()=>{
+      const k=el.dataset.toggle;
+      if(k==="showIncome") state.showIncome=el.checked;
+      else if(k==="showContact") state.showContact=el.checked;
+      else if(k==="showHoroscope") state.showHoroscope=el.checked;
+      saveState(); renderDoc();
+    });
+  });
+}
+
+function refreshProgress(){
+  // light touch: mark chip done when its required fields are filled
+  renderStepper();
+}
+
+/* ---- photos ---- */
+function renderPhotoSlots(){
+  const grid=$("#photoGrid"); if(!grid) return;
+  const L=state.lang;
+  grid.innerHTML="";
+  state.photos.forEach((p,i)=>{
+    const d=document.createElement("div");
+    d.className="photo-slot"+(i===0?" primary":"");
+    d.innerHTML=`<img src="${p}" alt=""><button class="rm" title="${esc(tL(L,"removePhoto"))}">×</button>`;
+    d.querySelector(".rm").onclick=()=>{ state.photos.splice(i,1); saveState(); renderPhotoSlots(); renderDoc(); };
+    grid.appendChild(d);
+  });
+  const add=document.createElement("label");
+  add.className="photo-slot photo-add";
+  add.innerHTML=`<span>＋<br>${esc(tL(L,"addPhoto"))}</span>`;
+  const inp=document.createElement("input");
+  inp.type="file"; inp.accept="image/*"; inp.multiple=true; inp.hidden=true;
+  inp.onchange=()=>addPhotos(inp.files);
+  add.appendChild(inp);
+  grid.appendChild(add);
+}
+function addPhotos(files){
+  const list=Array.from(files||[]).slice(0, 7-state.photos.length);
+  let pending=list.length;
+  if(!pending) return;
+  list.forEach(file=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        // downscale to keep the file light
+        const max=900; let {width:w,height:h}=img;
+        if(Math.max(w,h)>max){ const s=max/Math.max(w,h); w=Math.round(w*s); h=Math.round(h*s); }
+        const c=document.createElement("canvas"); c.width=w; c.height=h;
+        c.getContext("2d").drawImage(img,0,0,w,h);
+        state.photos.push(c.toDataURL("image/jpeg",0.85));
+        if(--pending===0){ saveState(); renderPhotoSlots(); renderDoc(); }
+      };
+      img.onerror=()=>{ if(--pending===0){ saveState(); renderPhotoSlots(); renderDoc(); } };
+      img.src=r.result;
+    };
+    r.readAsDataURL(file);
+  });
+}
+
+/* ============================================================
+   7. Preview document
+   ============================================================ */
+function currentLang(){ return state.docLang || state.lang; }
+
+function buildGroups(lang){
+  const groups=[];
+  STEPS.forEach(step=>{
+    step.sections.forEach(sec=>{
+      const items=[];
+      sec.fields.forEach(f=>{
+        if(f.t==="photos"||f.t==="toggle") return;
+        if(f.k==="showIncome"||f.k==="showContact"||f.k==="showHoroscope") return;
+        if(sec.legend==="secCareer" && f.k==="income" && !state.showIncome) return;
+        if(sec.legend==="secContact" && !state.showContact) return;
+        if(sec.legend==="secHoroscope" && !state.showHoroscope) return;
+        let v=state.data[f.k];
+        if(v===undefined||v===null||String(v).trim()==="") return;
+        if(f.t==="select") v=tL(lang, v);
+        items.push({k:tL(lang,f.l), v:String(v), full:!!f.full});
+      });
+      // derived: age
+      if(sec.legend==="secPersonal"){
+        const a=calcAge(state.data.dob);
+        if(a) items.push({k:tL(lang,"f_age"), v:a+" "+ (lang==="en"?"years":lang==="hi"?"वर्ष":lang==="mr"?"वर्षे":"वर्षाणि")});
+        if(state.data.dob) { const idx=items.findIndex(x=>x.k===tL(lang,"f_dob")); if(idx>=0) items[idx].v=fmtDate(state.data.dob); }
+      }
+      if(items.length) groups.push({legend:tL(lang,sec.legend), items});
+    });
+  });
+  return groups;
+}
+
+function renderDoc(){
+  const lang=currentLang();
+  const doc=$("#doc");
+  doc.dataset.tpl=state.template;
+  if(state.accent) doc.style.setProperty("--d-accent",state.accent); else doc.style.removeProperty("--d-accent");
+  const fontMap={serif:"'Cormorant Garamond',serif",devanagari:"'Noto Serif Devanagari',serif",sans:"'Inter','Mukta',sans-serif"};
+  doc.style.setProperty("--d-headfont",fontMap[state.font]||fontMap.serif);
+  if(state.font==="devanagari") doc.style.setProperty("--d-font","'Noto Serif Devanagari','Mukta',serif");
+
+  const hasAny = Object.values(state.data).some(v=>String(v||"").trim()) || state.photos.length;
+  if(!hasAny){ doc.innerHTML=`<div class="empty-doc">🪔<br><br>${esc(tL(lang,"emptyDoc"))}</div>`; fitPreview(); return; }
+
+  const groups=buildGroups(lang);
+  const name=state.data.name||"";
+  const subline=[state.data.occupation, state.data.city||state.data.workCity].filter(Boolean).join(" · ");
+  const metaBits=[];
+  if(state.showContact){
+    if(state.data.phone) metaBits.push("📞 "+esc(state.data.phone));
+    if(state.data.whatsapp && state.data.whatsapp!==state.data.phone) metaBits.push("WhatsApp: "+esc(state.data.whatsapp));
+    if(state.data.emailAddr) metaBits.push("✉ "+esc(state.data.emailAddr));
+  }
+  if(state.data.pob) metaBits.push("📍 "+esc(state.data.pob));
+
+  let html="";
+  if(state.invocation) html+=`<div class="doc-invocation">॥ श्री गणेशाय नमः ॥</div>`;
+  html+=`<div class="doc-head">
+    <div class="photo">${state.photos[0]?`<img src="${state.photos[0]}" alt="">`:esc(tL(lang,"primaryPhoto"))}</div>
+    <div class="id">
+      <h2>${esc(name||tL(lang,"f_name"))}</h2>
+      ${subline?`<div class="sub">${esc(subline)}</div>`:""}
+      ${metaBits.length?`<div class="meta">${metaBits.join("<br>")}</div>`:""}
+    </div>
+  </div>`;
+  html+=`<div class="doc-body">`;
+  groups.forEach(g=>{
+    if(g.legend===tL(lang,"secPhotos")) return;
+    html+=`<div class="sec"><div class="sec-title">${esc(g.legend)}</div><div class="grid-d">`;
+    g.items.forEach(it=>{
+      html+=`<div class="item${it.full?" full":""}"><span class="k">${esc(it.k)}</span><span class="v">${esc(it.v).replace(/\n/g,"<br>")}</span></div>`;
+    });
+    html+=`</div></div>`;
+  });
+  if(state.photos.length>1){
+    html+=`<div class="sec"><div class="sec-title">${esc(tL(lang,"secPhotos"))}</div><div class="doc-photos">`;
+    state.photos.slice(1,7).forEach(p=>{ html+=`<img src="${p}" alt="">`; });
+    html+=`</div></div>`;
+  }
+  html+=`<div class="doc-foot">${esc(tL(lang,"docFooter"))}</div>`;
+  html+=`</div>`;
+  doc.innerHTML=html;
+  fitPreview();
+}
+
+function fitPreview(){
+  const wrap=document.querySelector(".preview-scroll");
+  const scaleEl=$("#docScale");
+  if(!wrap||!scaleEl) return;
+  const avail=wrap.clientWidth-32;
+  const s=Math.min(1, avail/794);
+  scaleEl.style.transform=`scale(${s})`;
+  scaleEl.style.height=(1123*s+40)+"px";
+}
+
+/* ============================================================
+   8. Exports
+   ============================================================ */
+function requireLib(globalName){
+  if(hasLib(globalName)) return true;
+  toast(tL(state.lang,"libMissing"));
+  return false;
+}
+async function docCanvas(scale=2){
+  // render off-screen clone at natural size for a crisp capture
+  return await html2canvas($("#doc"), {scale, backgroundColor:"#ffffff", useCORS:true, logging:false});
+}
+function dlImage(type){
+  if(!requireLib("html2canvas")) return;
+  busy(true, tL(state.lang,"busyImg"));
+  docCanvas(2).then(canvas=>{
+    const mime=type==="jpg"?"image/jpeg":"image/png";
+    const durl=canvas.toDataURL(mime, type==="jpg"?0.95:undefined);
+    if(type==="png"){ const a=document.createElement("a"); a.href=durl; a.download=fileBase("png"); a.click(); }
+    else { saveBlob(dataURLtoBlob(durl), fileBase("jpg")); }
+    busy(false); toast(tL(state.lang,"toastDownloaded"));
+  }).catch(e=>{ busy(false); console.error(e); toast("⚠ "+e.message); });
+}
+function dlPdf(){
+  if(!requireLib("html2canvas")||!window.jspdf) { toast(tL(state.lang,"libMissing")); return; }
+  busy(true, tL(state.lang,"busyPdf"));
+  docCanvas(2).then(canvas=>{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({unit:"pt",format:"a4",orientation:"portrait"});
+    const pw=595.28, ph=841.89;
+    const imgW=canvas.width, imgH=canvas.height;
+    const pageSrcH=Math.floor(imgW * (ph/pw));
+    let y=0, page=0;
+    while(y<imgH){
+      const sliceH=Math.min(pageSrcH, imgH-y);
+      const c=document.createElement("canvas"); c.width=imgW; c.height=sliceH;
+      const ctx=c.getContext("2d"); ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,imgW,sliceH);
+      ctx.drawImage(canvas,0,y,imgW,sliceH,0,0,imgW,sliceH);
+      const img=c.toDataURL("image/jpeg",0.95);
+      if(page>0) pdf.addPage();
+      const drawH=sliceH*(pw/imgW);
+      pdf.addImage(img,"JPEG",0,0,pw,drawH);
+      y+=sliceH; page++;
+    }
+    pdf.save(fileBase("pdf"));
+    busy(false); toast(tL(state.lang,"toastDownloaded"));
+  }).catch(e=>{ busy(false); console.error(e); toast("⚠ "+e.message); });
+}
+async function dlDocx(){
+  if(!requireLib("docx")) return;
+  busy(true, tL(state.lang,"busyDocx"));
+  try{
+    const D=window.docx;
+    const lang=currentLang();
+    const groups=buildGroups(lang);
+    const children=[];
+    children.push(new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:state.data.name||tL(lang,"f_name"),bold:true,size:40,font:"Georgia"})]}));
+    const sub=[state.data.occupation,state.data.city||state.data.workCity].filter(Boolean).join(" · ");
+    if(sub) children.push(new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.TextRun({text:sub,size:22,italics:true})]}));
+    children.push(new D.Paragraph({children:[]}));
+    // primary photo
+    if(state.photos[0]){
+      try{
+        children.push(new D.Paragraph({alignment:D.AlignmentType.CENTER,children:[new D.ImageRun({data:dataURLtoU8(state.photos[0]),transformation:{width:130,height:130}})]}));
+      }catch(e){}
+    }
+    groups.forEach(g=>{
+      children.push(new D.Paragraph({children:[new D.TextRun({text:g.legend.toUpperCase(),bold:true,color:"7A1F2B",size:24})],spacing:{before:200,after:80}}));
+      g.items.forEach(it=>{
+        children.push(new D.Paragraph({children:[new D.TextRun({text:it.k+": ",bold:true,size:22}),new D.TextRun({text:it.v,size:22})],spacing:{after:40}}));
+      });
+    });
+    children.push(new D.Paragraph({alignment:D.AlignmentType.CENTER,spacing:{before:300},children:[new D.TextRun({text:tL(lang,"docFooter"),size:16,italics:true,color:"999999"})]}));
+    const doc=new D.Document({sections:[{properties:{},children}]});
+    const blob=await D.Packer.toBlob(doc);
+    saveBlob(blob, fileBase("docx"));
+    busy(false); toast(tL(state.lang,"toastDownloaded"));
+  }catch(e){ busy(false); console.error(e); toast("⚠ "+e.message); }
+}
+async function dlPptx(){
+  if(!requireLib("PptxGenJS")) return;
+  busy(true, tL(state.lang,"busyPptx"));
+  try{
+    const lang=currentLang();
+    const groups=buildGroups(lang);
+    const pptx=new PptxGenJS();
+    pptx.defineLayout({name:"A4P",width:8.27,height:11.69});
+    pptx.layout="A4P";
+    const accent = state.accent || "#7A1F2B";
+    // title slide
+    let s1=pptx.addSlide();
+    s1.background={color:"FFFDF8"};
+    s1.addShape(pptx.ShapeType.rect,{x:0,y:0,w:8.27,h:2.6,fill:{color:accent.replace("#","")}});
+    if(state.invocation) s1.addText("॥ श्री गणेशाय नमः ॥",{x:0,y:0.35,w:8.27,h:0.5,align:"center",color:"F6D98A",fontFace:"Noto Serif Devanagari",fontSize:18});
+    s1.addText(state.data.name||tL(lang,"f_name"),{x:0.5,y:1.0,w:7.27,h:0.9,align:"center",color:"FFFFFF",fontFace:"Georgia",fontSize:34,bold:true});
+    const sub=[state.data.occupation,state.data.city||state.data.workCity].filter(Boolean).join(" · ");
+    if(sub) s1.addText(sub,{x:0.5,y:1.85,w:7.27,h:0.5,align:"center",color:"F3E4C4",fontSize:16});
+    // photo
+    if(state.photos[0]){ try{ s1.addImage({data:state.photos[0],x:3.13,y:3.2,w:2,h:2,rounding:true}); }catch(e){} }
+    s1.addText(tL(lang,"docFooter"),{x:0.5,y:10.9,w:7.27,h:0.4,align:"center",color:"999999",fontSize:10,italic:true});
+    // content slides — 2 sections per slide
+    for(let i=0;i<groups.length;i+=2){
+      const slide=pptx.addSlide();
+      slide.background={color:"FFFDF8"};
+      slide.addShape(pptx.ShapeType.rect,{x:0,y:0,w:8.27,h:0.55,fill:{color:accent.replace("#","")}});
+      const chunk=groups.slice(i,i+2);
+      let y=0.9;
+      chunk.forEach(g=>{
+        slide.addText(g.legend.toUpperCase(),{x:0.5,y,w:7.27,h:0.4,color:accent.replace("#",""),fontSize:16,bold:true,fontFace:"Georgia"});
+        y+=0.5;
+        const lines=g.items.map(it=>`${it.k}: ${it.v}`);
+        slide.addText(lines.map(t=>({text:t+"\n",options:{fontSize:12,color:"2B2118"}})),{x:0.5,y,w:7.27,h:4.5,valign:"top"});
+        y+=Math.min(4.6, 0.35*lines.length+0.3);
+      });
+      slide.addText(tL(lang,"docFooter"),{x:0.5,y:11.1,w:7.27,h:0.3,align:"center",color:"BBBBBB",fontSize:9,italic:true});
+    }
+    await pptx.writeFile({fileName:fileBase("pptx")});
+    busy(false); toast(tL(state.lang,"toastDownloaded"));
+  }catch(e){ busy(false); console.error(e); toast("⚠ "+e.message); }
+}
+
+/* ============================================================
+   9. Email + share
+   ============================================================ */
+function openEmailModal(){
+  const L=state.lang;
+  $("#emailSub").value = `${state.data.name||""} — ${tL(L,"appTag")}`.trim();
+  $("#emailMsg").value = L==="en"
+    ? `Namaste,\n\nPlease find attached the marriage portfolio (biodata) of ${state.data.name||""}.\n\nWarm regards.`
+    : tL(L,"appTag");
+  $("#emailNote").textContent = tL(L,"emailNote");
+  $("#emailModal").classList.add("open");
+}
+async function sendEmail(){
+  const to=$("#emailTo").value.trim();
+  if(to && !/^[^@\s]+@[^@\s]+\.[^@\s]+(\s*,\s*[^@\s]+@[^@\s]+\.[^@\s]+)*$/.test(to)){
+    toast(tL(state.lang,"invalidEmail")); return;
+  }
+  const subject=$("#emailSub").value, message=$("#emailMsg").value;
+  busy(true, tL(state.lang,"busyMail"));
+  try{
+    if(EMAILJS.enabled && window.emailjs){
+      await window.emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {to_email:to, subject, message});
+      busy(false); $("#emailModal").classList.remove("open"); toast("✉ "+tL(state.lang,"toastReady"));
+      return;
+    }
+    // fallback: save PDF then open mail client
+    if(hasLib("html2canvas") && window.jspdf){
+      const canvas=await docCanvas(2);
+      const {jsPDF}=window.jspdf;
+      const pdf=new jsPDF({unit:"pt",format:"a4"});
+      const pw=595.28, ph=841.89, imgW=canvas.width, imgH=canvas.height, pageSrcH=Math.floor(imgW*(ph/pw));
+      let y=0,page=0;
+      while(y<imgH){
+        const sliceH=Math.min(pageSrcH,imgH-y);
+        const c=document.createElement("canvas"); c.width=imgW; c.height=sliceH;
+        const ctx=c.getContext("2d"); ctx.fillStyle="#fff"; ctx.fillRect(0,0,imgW,sliceH);
+        ctx.drawImage(canvas,0,y,imgW,sliceH,0,0,imgW,sliceH);
+        if(page>0) pdf.addPage();
+        pdf.addImage(c.toDataURL("image/jpeg",0.95),"JPEG",0,0,pw,sliceH*(pw/imgW));
+        y+=sliceH; page++;
+      }
+      pdf.save(fileBase("pdf"));
+    }
+    const mailto=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.location.href=mailto;
+    busy(false); $("#emailModal").classList.remove("open");
+    toast(tL(state.lang,"toastDownloaded"));
+  }catch(e){ busy(false); console.error(e); toast("⚠ "+e.message); }
+}
+function shareWhatsApp(){
+  const L=state.lang;
+  const txt=`${state.data.name||""} — ${tL(L,"appTag")}`.trim();
+  window.open("https://wa.me/?text="+encodeURIComponent(txt),"","noopener");
+}
+
+/* ============================================================
+   10. Template modal
+   ============================================================ */
+function renderTemplates(){
+  const L=state.lang, grid=$("#tplGrid"); grid.innerHTML="";
+  TEMPLATES.forEach(tp=>{
+    const c=document.createElement("button");
+    c.className="tpl-card"+(state.template===tp.id?" on":"");
+    c.innerHTML=`<div class="swatch" style="background:${tp.bg}">${tp.icon}</div><div class="nm">${esc(tL(L,"tpl_"+tp.id))}<small>${tp.id}</small></div>`;
+    c.onclick=()=>{ state.template=tp.id; saveState(); renderTemplates(); renderDoc(); };
+    grid.appendChild(c);
+  });
+  // accents
+  const sw=$("#accentSwatches"); sw.innerHTML="";
+  ACCENTS.forEach(a=>{
+    const b=document.createElement("button");
+    b.className="sw"+(state.accent===a?" on":"");
+    b.style.background=a||"linear-gradient(135deg,#b3441e,#0f6b63)";
+    b.title=a||"default";
+    b.onclick=()=>{ state.accent=a; saveState(); renderTemplates(); renderDoc(); };
+    sw.appendChild(b);
+  });
+  $("#fontSelect").value=state.font;
+  $("#invocationToggle").checked=!!state.invocation;
+  $("#tplTitle").textContent=tL(L,"templateLib");
+  $("#accentLbl").textContent=tL(L,"accent");
+  $("#fontLbl").textContent=tL(L,"typeface");
+  $("#invLbl").textContent=tL(L,"invocation");
+}
+
+/* ============================================================
+   11. Language + chrome
+   ============================================================ */
+function applyLang(){
+  const L=state.lang;
+  document.body.className="lang-"+L+" "+document.body.className.replace(/lang-\w+/,"").replace(/\s+/g," ").trim();
+  document.documentElement.lang=L;
+  $("#appName").textContent=tL(L,"appName");
+  $("#appTag").textContent=tL(L,"appTag");
+  $("#langLabel").textContent=tL(L,"langLabel");
+  $("#tplBtnTxt").textContent=tL(L,"templates");
+  $("#resetBtn").title=tL(L,"reset");
+  $("#previewLbl").textContent=tL(L,"livePreview");
+  $("#btnPrint").innerHTML=`<span class="ic">🖨</span>${esc(tL(L,"print"))}`;
+  $("#btnEmail").innerHTML=`<span class="ic">✉</span>${esc(tL(L,"email"))}`;
+  $("#btnShare").innerHTML=`<span class="ic">➤</span>${esc(tL(L,"share"))}`;
+  $("#tabEdit").textContent="✎ "+tL(L,"edit");
+  $("#tabPreview").textContent="👁 "+tL(L,"preview");
+  $("#emailTitle").textContent=tL(L,"sendByEmail");
+  $("#emailToLbl").textContent=tL(L,"recipient");
+  $("#emailSubLbl").textContent=tL(L,"subject");
+  $("#emailMsgLbl").textContent=tL(L,"message");
+  $("#emailSendTxt").textContent=tL(L,"downloadOpenMail");
+  const dl=$("#docLangSelect"); if(dl){ dl.previousElementSibling && (dl.previousElementSibling.textContent=tL(L,"docLang")); }
+  applyExtraLabels();
+  renderStepper(); renderForm(); renderDoc(); renderTemplates();
+}
+
+/* ============================================================
+   12. Init
+   ============================================================ */
+function init(){
+  if(tryLoadFromHash()){ /* read-only shared link loaded */ }
+  // doc language select (injected into preview bar)
+  const bar=document.querySelector(".preview-bar");
+  const wrap=document.createElement("span");
+  wrap.style.cssText="display:flex;align-items:center;gap:6px";
+  wrap.innerHTML=`<span class="lbl">${esc(tL(state.lang,"docLang"))}</span>`;
+  const sel=document.createElement("select");
+  sel.id="docLangSelect"; sel.className="sel";
+  sel.innerHTML=`<option value="en">English</option><option value="hi">हिन्दी</option><option value="mr">मराठी</option><option value="sa">संस्कृतम्</option>`;
+  sel.value=state.docLang||state.lang;
+  sel.onchange=()=>{ state.docLang=sel.value; saveState(); renderDoc(); };
+  wrap.appendChild(sel);
+  bar.insertBefore(wrap, $("#btnPrint"));
+
+  // controls
+  $("#langSelect").value=state.lang;
+  $("#langSelect").onchange=e=>{
+    const old=state.lang, next=e.target.value;
+    const followDoc=(state.docLang===old)||!state.docLang;
+    state.lang=next;
+    if(followDoc){ state.docLang=next; const dl=$("#docLangSelect"); if(dl) dl.value=next; }
+    saveState(); applyLang();
+  };
+  $("#tplBtn").onclick=()=>{ renderTemplates(); $("#tplModal").classList.add("open"); };
+  $("#tplClose").onclick=()=>$("#tplModal").classList.remove("open");
+  $("#tplModal").onclick=e=>{ if(e.target.id==="tplModal") $("#tplModal").classList.remove("open"); };
+  $("#fontSelect").onchange=e=>{ state.font=e.target.value; saveState(); renderDoc(); };
+  $("#invocationToggle").onchange=e=>{ state.invocation=e.target.checked; saveState(); renderDoc(); };
+  $("#resetBtn").onclick=()=>{ if(confirm(tL(state.lang,"resetConfirm"))){ localStorage.removeItem(LS_KEY); state=structuredClone(DEFAULT_STATE); $("#langSelect").value=state.lang; $("#docLangSelect").value=state.docLang; applyLang(); toast(tL(state.lang,"toastReady")); } };
+
+  $("#navPrev").onclick=()=>{ if(state.step>0){ state.step--; saveState(); renderAll(); } };
+  $("#navNext").onclick=()=>{ if(state.step<STEPS.length-1){ state.step++; saveState(); renderAll(); } else { validateAndFinish(); } };
+
+  $("#btnPdf").onclick=dlPdf; $("#btnPng").onclick=()=>dlImage("png"); $("#btnJpg").onclick=()=>dlImage("jpg");
+  $("#btnDocx").onclick=dlDocx; $("#btnPptx").onclick=dlPptx; $("#btnPrint").onclick=()=>window.print();
+  $("#btnEmail").onclick=openEmailModal; $("#emailClose").onclick=()=>$("#emailModal").classList.remove("open");
+  $("#emailModal").onclick=e=>{ if(e.target.id==="emailModal") $("#emailModal").classList.remove("open"); };
+  $("#emailSend").onclick=sendEmail;
+  $("#btnShare").onclick=shareWhatsApp;
+
+  $("#tabEdit").onclick=()=>{ document.body.classList.remove("view-preview"); document.body.classList.add("view-edit"); $("#tabEdit").classList.add("on"); $("#tabPreview").classList.remove("on"); };
+  $("#tabPreview").onclick=()=>{ document.body.classList.remove("view-edit"); document.body.classList.add("view-preview"); $("#tabPreview").classList.add("on"); $("#tabEdit").classList.remove("on"); fitPreview(); };
+
+  // ---- optional extras ----
+  fillGunaSelects();
+  $("#moreBtn").onclick=()=>{ applyExtraLabels(); prefillGuna(); $("#moreModal").classList.add("open"); };
+  $("#moreClose").onclick=()=>$("#moreModal").classList.remove("open");
+  $("#moreModal").onclick=e=>{ if(e.target.id==="moreModal") $("#moreModal").classList.remove("open"); };
+  $("#btnSaveJson").onclick=saveJsonFile;
+  $("#btnLoadJson").onclick=()=>$("#jsonInput").click();
+  $("#jsonInput").onchange=e=>{ if(e.target.files[0]) loadJsonFile(e.target.files[0]); e.target.value=""; };
+  $("#btnMakeLink").onclick=makeLink;
+  $("#btnOpenLink").onclick=openReadOnly;
+  $("#btnGuna").onclick=runGuna;
+  $("#roMakeOwn").onclick=makeOwn;
+
+  window.addEventListener("resize",fitPreview);
+  applyLang();
+  setTimeout(fitPreview,120);
+}
+/* ============================================================
+   13. Optional extras  (save/load JSON, share link, Guna Milan)
+   ============================================================ */
+
+/* ---- extra i18n (merged in, so the core dictionaries stay clean) ---- */
+Object.assign(I18N.en, {
+  more:"More", moreTitle:"Optional extras",
+  secSaveLoad:"Save & load data", saveJson:"Save data (.json)", loadJson:"Load data (.json)",
+  saveLoadNote:"Keep a copy of everything you have entered in a small .json file and load it back later on any device — handy for editing on a computer and finishing on a phone.",
+  secShare:"Shareable link (read-only)", includePhotos:"Include photos (larger link)",
+  makeLink:"Create link", openLink:"Open read-only",
+  shareNote:"Creates a self-contained link that opens your portfolio in a read-only view. Anyone with the link can view and download it, but cannot edit your data. Photos make the link long — leave them out for WhatsApp.",
+  linkCopied:"Link copied to clipboard", linkTooLong:"Link is long — consider sharing without photos",
+  secGuna:"Kundli matching (Guna Milan)",
+  gmNote:"An indicative Ashtakoot (36-point) match based on commonly used tables. Horoscope matching is a personal matter — please confirm with a qualified astrologer before deciding.",
+  gmBoy:"Groom", gmGirl:"Bride", gmName:"Name", gmNak:"Nakshatra",
+  gmCalc:"Calculate Guna Milan", gmKuta:"Kuta", gmPoints:"Points", gmOutOf:"out of 36",
+  gmPickBoth:"Please select both nakshatras",
+  gm_excellent:"Excellent match", gm_good:"Good match", gm_average:"Average match", gm_low:"Needs careful consideration",
+  roBanner:"You are viewing a shared portfolio (read-only).", roMakeOwn:"Create my own"
+});
+Object.assign(I18N.hi, {
+  more:"अधिक", moreTitle:"अतिरिक्त सुविधाएँ",
+  secSaveLoad:"डेटा सहेजें व लोड करें", saveJson:"डेटा सहेजें (.json)", loadJson:"डेटा लोड करें (.json)",
+  saveLoadNote:"अपनी सारी भरी हुई जानकारी एक छोटी .json फ़ाइल में सहेजें और बाद में किसी भी डिवाइस पर वापस लोड करें। कंप्यूटर पर संपादन और मोबाइल पर पूर्ण करने में सुविधाजनक।",
+  secShare:"शेयर करने योग्य लिंक (केवल-पठन)", includePhotos:"फ़ोटो शामिल करें (लंबा लिंक)",
+  makeLink:"लिंक बनाएँ", openLink:"केवल-पठन खोलें",
+  shareNote:"एक स्वयं-निहित लिंक बनाता है जो आपका परिचय केवल-पठन रूप में खोलता है। लिंक पाने वाला देख व डाउनलोड कर सकता है, पर आपका डेटा बदल नहीं सकता। फ़ोटो लिंक को लंबा बना देती हैं — व्हाट्सएप के लिए बिना फ़ोटो रखें।",
+  linkCopied:"लिंक क्लिपबोर्ड पर कॉपी हो गया", linkTooLong:"लिंक लंबा है — बिना फ़ोटो शेयर करें",
+  secGuna:"कुंडली मिलान (गुण मिलान)",
+  gmNote:"प्रचलित सारणियों पर आधारित एक सांकेतिक अष्टकूट (36 अंक) मिलान। कुंडली मिलान व्यक्तिगत विषय है — निर्णय से पहले योग्य ज्योतिषी से पुष्टि करें।",
+  gmBoy:"वर", gmGirl:"वधू", gmName:"नाम", gmNak:"नक्षत्र",
+  gmCalc:"गुण मिलान करें", gmKuta:"कूट", gmPoints:"अंक", gmOutOf:"36 में से",
+  gmPickBoth:"कृपया दोनों नक्षत्र चुनें",
+  gm_excellent:"उत्तम मिलान", gm_good:"अच्छा मिलान", gm_average:"मध्यम मिलान", gm_low:"विचारपूर्वक निर्णय लें",
+  roBanner:"आप एक साझा किया गया परिचय देख रहे हैं (केवल-पठन)।", roMakeOwn:"अपना बनाएँ"
+});
+Object.assign(I18N.mr, {
+  more:"अधिक", moreTitle:"अतिरिक्त सुविधा",
+  secSaveLoad:"डेटा जतन करा व लोड करा", saveJson:"डेटा जतन करा (.json)", loadJson:"डेटा लोड करा (.json)",
+  saveLoadNote:"तुमची सर्व भरलेली माहिती एका लहान .json फाइलमध्ये जतन करा आणि नंतर कोणत्याही डिव्हाइसवर परत लोड करा. संगणकावर संपादन व मोबाइलवर पूर्ण करण्यास सोयीचे.",
+  secShare:"शेअर करण्यायोग्य लिंक (केवळ-वाचन)", includePhotos:"फोटो समाविष्ट करा (मोठी लिंक)",
+  makeLink:"लिंक तयार करा", openLink:"केवळ-वाचन उघडा",
+  shareNote:"तुमचा परिचय केवळ-वाचन स्वरूपात उघडणारी स्वयंपूर्ण लिंक तयार करते. लिंक मिळालेली व्यक्ती पाहू व डाउनलोड करू शकते, पण तुमचा डेटा बदलू शकत नाही. फोटो लिंक मोठी करतात — व्हॉट्सअॅपसाठी फोटोंशिवाय ठेवा.",
+  linkCopied:"लिंक क्लिपबोर्डवर कॉपी झाली", linkTooLong:"लिंक मोठी आहे — फोटोंशिवाय शेअर करा",
+  secGuna:"पत्रिका जुळवणी (गुण मिलान)",
+  gmNote:"प्रचलित सारण्यांवर आधारित सूचक अष्टकूट (36 गुण) मिलान. पत्रिका जुळवणी वैयक्तिक विषय आहे — निर्णयापूर्वी योग्य ज्योतिषाकडून खात्री करा.",
+  gmBoy:"वर", gmGirl:"वधू", gmName:"नाव", gmNak:"नक्षत्र",
+  gmCalc:"गुण मिलान करा", gmKuta:"कूट", gmPoints:"गुण", gmOutOf:"36 पैकी",
+  gmPickBoth:"कृपया दोन्ही नक्षत्रे निवडा",
+  gm_excellent:"उत्तम मिलान", gm_good:"चांगले मिलान", gm_average:"मध्यम मिलान", gm_low:"विचारपूर्वक निर्णय घ्या",
+  roBanner:"तुम्ही शेअर केलेला परिचय पाहत आहात (केवळ-वाचन).", roMakeOwn:"स्वतःचे तयार करा"
+});
+Object.assign(I18N.sa, {
+  more:"अधिकम्", moreTitle:"अतिरिक्तसुविधाः",
+  secSaveLoad:"दत्तांशं रक्षतु लोडयतु च", saveJson:"दत्तांशं रक्षतु (.json)", loadJson:"दत्तांशं लोडयतु (.json)",
+  saveLoadNote:"भवता लिखितं सर्वं लघु .json सञ्चिकायां रक्षतु, पश्चात् कस्मिंश्चित् यन्त्रे पुनः लोडयतु।",
+  secShare:"सहभागिसूत्रम् (केवलपठनम्)", includePhotos:"चित्राणि योजयतु (दीर्घं सूत्रम्)",
+  makeLink:"सूत्रं रचयतु", openLink:"केवलपठनं उद्घाटयतु",
+  shareNote:"स्वयंपूर्णं सूत्रं रचयति यत् भवतः परिचयं केवलपठनरूपेण उद्घाटयति। सूत्रप्राप्तः द्रष्टुं अवतर्तुं च शक्नोति, किन्तु भवतः दत्तांशं परिवर्तयितुं न शक्नोति।",
+  linkCopied:"सूत्रं क्लिप्बोर्डे प्रतिलिखितम्", linkTooLong:"सूत्रं दीर्घम् — चित्ररहितं प्रेषयतु",
+  secGuna:"जन्मकुण्डलीमेलनम् (गुणमेलनम्)",
+  gmNote:"प्रचलितसारणीषु आधारितम् सूचकम् अष्टकूट (36 अङ्क) मेलनम्। जन्मकुण्डलीमेलनं वैयक्तिकः विषयः — निर्णयात् पूर्वं योग्यज्योतिषिणा पुष्टिं कुर्यात्।",
+  gmBoy:"वरः", gmGirl:"वधूः", gmName:"नाम", gmNak:"नक्षत्रम्",
+  gmCalc:"गुणमेलनं गणयतु", gmKuta:"कूटम्", gmPoints:"अङ्काः", gmOutOf:"36 मध्ये",
+  gmPickBoth:"कृपया उभे नक्षत्रे चिनोतु",
+  gm_excellent:"उत्तमं मेलनम्", gm_good:"शोभनं मेलनम्", gm_average:"मध्यमं मेलनम्", gm_low:"विचारपूर्वकं निर्णयः",
+  roBanner:"भवान् सहभागिपरिचयं पश्यति (केवलपठनम्)।", roMakeOwn:"स्वीयं रचयतु"
+});
+
+/* ---- nakshatra + Ashtakoot tables ---- */
+const NAKSHATRAS=[["Ashwini","अश्विनी"],["Bharani","भरणी"],["Krittika","कृत्तिका"],["Rohini","रोहिणी"],["Mrigashira","मृगशिरा"],["Ardra","आर्द्रा"],["Punarvasu","पुनर्वसु"],["Pushya","पुष्य"],["Ashlesha","आश्लेषा"],["Magha","मघा"],["Purva Phalguni","पूर्व फाल्गुनी"],["Uttara Phalguni","उत्तर फाल्गुनी"],["Hasta","हस्त"],["Chitra","चित्रा"],["Swati","स्वाति"],["Vishakha","विशाखा"],["Anuradha","अनुराधा"],["Jyeshtha","ज्येष्ठा"],["Mula","मूल"],["Purva Ashadha","पूर्वाषाढा"],["Uttara Ashadha","उत्तराषाढा"],["Shravana","श्रवण"],["Dhanishta","धनिष्ठा"],["Shatabhisha","शतभिषा"],["Purva Bhadrapada","पूर्व भाद्रपद"],["Uttara Bhadrapada","उत्तर भाद्रपद"],["Revati","रेवती"]];
+const RASHI_OF=[0,0,1,1,2,2,3,3,3,4,4,5,5,6,6,7,7,7,8,8,9,9,10,10,11,11,11];
+const GANA_OF=[0,1,2,1,0,1,0,0,2,2,1,1,0,2,0,2,0,2,2,1,1,0,2,2,1,1,0];
+const NADI_OF=[0,1,2,2,1,0,0,1,2,2,1,0,0,1,2,2,1,0,0,1,2,2,1,0,0,1,2];
+const YONI_OF=[0,1,2,3,3,4,5,2,5,6,6,7,8,9,8,9,10,10,4,11,12,11,13,0,13,7,1];
+const VARNA_OF=[3,2,1,4,3,2,1,4,3,2,1,4];
+const VASHYA_OF=[0,0,1,2,3,1,1,4,1,2,1,2];
+const LORDS=[0,1,2,3,4,2,1,0,5,6,6,5];
+const REL=[[0,0,-1,1,1,1,0],[0,0,1,-1,-1,0,1],[0,1,0,-1,1,0,0],[0,0,1,0,1,0,0],[1,-1,0,1,0,1,-1],[1,-1,-1,1,1,0,0],[-1,1,1,-1,-1,0,0]];
+const VASHYA_M=[[2,2,1,1,0],[2,2,1,1,1],[1,1,2,0,1],[1,1,0,2,0],[0,1,1,0,2]];
+const GANA_M=[[6,6,0],[5,6,0],[1,0,6]];
+const YONI_M=[
+ [4,2,2,3,2,2,2,1,1,1,2,2,3,1],[2,4,3,3,2,3,3,2,3,1,2,3,2,1],[2,3,4,2,1,2,1,3,2,1,2,1,2,1],[3,3,2,4,2,2,1,3,1,1,2,2,2,1],
+ [2,2,1,2,4,2,2,2,1,1,2,2,1,1],[2,3,2,2,2,4,1,2,1,1,2,2,1,1],[2,3,1,1,2,1,4,2,2,2,1,1,2,1],[1,2,3,3,2,2,2,4,3,1,2,1,2,1],
+ [1,3,2,1,1,1,2,3,4,1,1,1,1,1],[1,1,1,1,1,1,2,1,1,4,1,1,1,1],[2,2,2,2,2,2,1,2,1,1,4,2,2,1],[2,3,1,2,2,2,1,1,1,1,2,4,2,1],
+ [3,2,2,2,1,1,2,2,1,1,2,2,4,1],[1,1,1,1,1,1,1,1,1,1,1,1,1,4]];
+
+function gmCombine(a,b){
+  const s=[a,b].sort((x,y)=>y-x);
+  if(s[0]===1&&s[1]===1) return 5;
+  if(s[0]===1&&s[1]===0) return 4;
+  if(s[0]===0&&s[1]===0) return 3;
+  if(s[0]===1&&s[1]===-1) return 1;
+  if(s[0]===0&&s[1]===-1) return 0.5;
+  return 0;
+}
+function gunaMilan(bNak,gNak){
+  const bR=RASHI_OF[bNak], gR=RASHI_OF[gNak];
+  const bG=GANA_OF[bNak], gG=GANA_OF[gNak];
+  const bN=NADI_OF[bNak], gN=NADI_OF[gNak];
+  const bY=YONI_OF[bNak], gY=YONI_OF[gNak];
+  const varna = VARNA_OF[bR]>=VARNA_OF[gR] ? 1 : 0;
+  const vashya = VASHYA_M[VASHYA_OF[bR]][VASHYA_OF[gR]];
+  const n1=((bNak-gNak+27)%27)+1, n2=((gNak-bNak+27)%27)+1;
+  const badTara=r=>{const m=r%9===0?9:r%9;return m===3||m===5||m===7;};
+  const tara = (badTara(n1)?0:1.5)+(badTara(n2)?0:1.5);
+  const yoni = YONI_M[bY][gY];
+  const lb=LORDS[bR], lg=LORDS[gR];
+  const graha = (bR===gR||lb===lg) ? 5 : gmCombine(REL[lb][lg],REL[lg][lb]);
+  const gana = GANA_M[bG][gG];
+  const d1=((bR-gR+12)%12)+1, d2=((gR-bR+12)%12)+1;
+  const dosha=(d1===6&&d2===8)||(d1===8&&d2===6)||(d1===5&&d2===9)||(d1===9&&d2===5)||(d1===2&&d2===12)||(d1===12&&d2===2);
+  const bhakoot = (bR===gR)?7:(dosha?0:7);
+  const nadi = (bN===gN)?0:8;
+  const kutas=[{n:"Varna",p:varna,max:1},{n:"Vashya",p:vashya,max:2},{n:"Tara",p:tara,max:3},{n:"Yoni",p:yoni,max:4},{n:"Graha Maitri",p:graha,max:5},{n:"Gana",p:gana,max:6},{n:"Bhakoot",p:bhakoot,max:7},{n:"Nadi",p:nadi,max:8}];
+  const total=kutas.reduce((s,k)=>s+k.p,0);
+  const band = total>=32?"excellent":total>=24?"good":total>=18?"average":"low";
+  return {kutas,total:Math.round(total*100)/100,band};
+}
+
+/* ---- labels for the extras modal ---- */
+function applyExtraLabels(){
+  const L=state.lang;
+  const set=(id,key)=>{ const el=document.getElementById(id); if(el) el.textContent=tL(L,key); };
+  set("moreBtnTxt","more"); set("moreTitle","moreTitle");
+  set("hSaveLoad","secSaveLoad"); set("saveLoadNote","saveLoadNote");
+  set("btnSaveJsonTxt","saveJson"); set("btnLoadJsonTxt","loadJson");
+  set("hShare","secShare"); set("sharePhotosLbl","includePhotos");
+  set("makeLinkTxt","makeLink"); set("openLinkTxt","openLink"); set("shareNote","shareNote");
+  set("hGuna","secGuna"); set("gmNote","gmNote");
+  set("gmBoyLbl","gmBoy"); set("gmGirlLbl","gmGirl");
+  set("gmBNameLbl","gmName"); set("gmGNameLbl","gmName");
+  set("gmBNakLbl","gmNak"); set("gmGNakLbl","gmNak"); set("gunaBtnTxt","gmCalc");
+  set("roBannerTxt","roBanner"); set("roMakeOwn","roMakeOwn");
+}
+
+function fillGunaSelects(){
+  const opts = NAKSHATRAS.map((n,i)=>`<option value="${i}">${i+1}. ${n[0]} (${n[1]})</option>`).join("");
+  ["gmBNak","gmGNak"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && !el.dataset.filled){ el.innerHTML=`<option value="">—</option>`+opts; el.dataset.filled="1"; }
+  });
+}
+function prefillGuna(){
+  const bn=document.getElementById("gmBName");
+  if(bn && !bn.value) bn.value=state.data.name||"";
+  const txt=(state.data.nakshatra||"").toLowerCase().trim();
+  if(txt){
+    const i=NAKSHATRAS.findIndex(n=>n[0].toLowerCase()===txt || n[0].toLowerCase().startsWith(txt.slice(0,4)));
+    const sel=document.getElementById("gmBNak");
+    if(i>=0 && sel && !sel.value) sel.value=String(i);
+  }
+}
+function runGuna(){
+  const b=parseInt(document.getElementById("gmBNak").value,10);
+  const g=parseInt(document.getElementById("gmGNak").value,10);
+  if(isNaN(b)||isNaN(g)){ toast(tL(state.lang,"gmPickBoth")); return; }
+  renderGunaResult(gunaMilan(b,g));
+}
+function renderGunaResult(r){
+  const L=state.lang, box=document.getElementById("gunaResult");
+  const rows=r.kutas.map(k=>`<tr><td>${esc(k.n)}</td><td style="text-align:right">${k.p} / ${k.max}</td></tr>`).join("");
+  box.innerHTML=`<table><thead><tr><th>${esc(tL(L,"gmKuta"))}</th><th style="text-align:right">${esc(tL(L,"gmPoints"))}</th></tr></thead><tbody>${rows}</tbody></table>
+    <div class="guna-total"><span class="big">${r.total}</span><span>${esc(tL(L,"gmOutOf"))}</span><span style="margin-left:auto;font-weight:600">${esc(tL(L,"gm_"+r.band))}</span></div>
+    <div class="guna-remark">${esc(tL(L,"gmNote"))}</div>`;
+  box.hidden=false;
+}
+
+/* ---- save / load JSON ---- */
+function saveJsonFile(){
+  const payload={v:1,app:"swayamvara",state:{data:state.data,photos:state.photos,lang:state.lang,docLang:state.docLang,template:state.template,accent:state.accent,font:state.font,invocation:state.invocation,showIncome:state.showIncome,showContact:state.showContact,showHoroscope:state.showHoroscope}};
+  saveBlob(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}), safeName()+"_Swayamvara_data.json");
+  toast(tL(state.lang,"toastDownloaded"));
+}
+function loadJsonFile(file){
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const p=JSON.parse(r.result); const s=p.state||p;
+      state.data=s.data||{}; state.photos=s.photos||[];
+      state.lang=s.lang||state.lang; state.docLang=s.docLang||state.lang;
+      state.template=s.template||state.template; state.accent=s.accent||""; state.font=s.font||"serif";
+      state.invocation=s.invocation!==false;
+      state.showIncome=s.showIncome!==false; state.showContact=s.showContact!==false; state.showHoroscope=s.showHoroscope!==false;
+      state.step=0; saveState();
+      document.getElementById("langSelect").value=state.lang;
+      const dl=document.getElementById("docLangSelect"); if(dl) dl.value=state.docLang;
+      applyLang(); document.getElementById("moreModal").classList.remove("open");
+      toast("✓ "+tL(state.lang,"toastReady"));
+    }catch(e){ toast("⚠ "+e.message); }
+  };
+  r.readAsText(file);
+}
+
+/* ---- shareable read-only link ---- */
+function buildShareLink(){
+  const payload={d:state.data,s:{i:state.showIncome,c:state.showContact,h:state.showHoroscope},t:state.template,a:state.accent,f:state.font,v:state.invocation?1:0,l:state.docLang,n:state.data.name||""};
+  if(document.getElementById("sharePhotos").checked) payload.ph=state.photos;
+  const json=JSON.stringify(payload);
+  const base=location.href.split("#")[0];
+  if(window.LZString) return base+"#p="+LZString.compressToEncodedURIComponent(json);
+  return base+"#b="+btoa(unescape(encodeURIComponent(json)));
+}
+function makeLink(){
+  const link=buildShareLink();
+  const out=document.getElementById("shareLinkOut");
+  out.style.display="block"; out.value=link;
+  const withPhotos=document.getElementById("sharePhotos").checked;
+  toast(tL(state.lang, link.length>8000&&!withPhotos ? "linkTooLong" : "linkCopied"));
+  try{ out.select(); document.execCommand("copy"); }catch(e){}
+  if(navigator.clipboard) navigator.clipboard.writeText(link).catch(()=>{});
+}
+function openReadOnly(){ window.open(buildShareLink(),"_blank","noopener"); }
+function makeOwn(){ location.hash=""; try{localStorage.removeItem(LS_KEY);}catch(e){} location.reload(); }
+
+function tryLoadFromHash(){
+  const h=location.hash||"";
+  if(!h.startsWith("#p=") && !h.startsWith("#b=")) return false;
+  let json=null;
+  try{
+    if(h.startsWith("#p=") && window.LZString) json=LZString.decompressFromEncodedURIComponent(h.slice(3));
+    else json=decodeURIComponent(escape(atob(h.slice(3))));
+  }catch(e){ json=null; }
+  if(!json) return false;
+  let p; try{ p=JSON.parse(json); }catch(e){ return false; }
+  readOnly=true;
+  state.data=p.d||{}; state.photos=p.ph||[];
+  state.showIncome=!!(p.s&&p.s.i); state.showContact=!!(p.s&&p.s.c); state.showHoroscope=!!(p.s&&p.s.h);
+  state.template=p.t||"patta"; state.accent=p.a||""; state.font=p.f||"serif";
+  state.invocation=!!p.v; state.docLang=p.l||"en"; state.lang=state.docLang;
+  document.body.classList.remove("view-edit","view-preview");
+  document.body.classList.add("readonly");
+  const b=document.getElementById("roBanner"); if(b) b.hidden=false;
+  return true;
+}
+
+function renderAll(){ renderStepper(); renderForm(); renderDoc(); }
+function validateAndFinish(){
+  // validate required fields on the current step
+  const step=STEPS[state.step]; let bad=null;
+  step.sections.forEach(sec=>sec.fields.forEach(f=>{
+    if(f.req && !String(state.data[f.k]||"").trim()){
+      const wrap=document.querySelector(`#stepHost [data-fk="${f.k}"]`);
+      if(wrap){ wrap.classList.add("invalid"); if(!bad) bad=wrap; }
+    }
+    if(f.validate==="email" && state.data[f.k] && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(state.data[f.k])){
+      const wrap=document.querySelector(`#stepHost [data-fk="${f.k}"]`);
+      if(wrap){ wrap.classList.add("invalid"); if(!bad) bad=wrap; }
+    }
+  }));
+  if(bad){ bad.scrollIntoView({behavior:"smooth",block:"center"}); toast(tL(state.lang,"required")); return; }
+  toast("✓ "+tL(state.lang,"toastReady"));
+  document.querySelector(".preview-pane").scrollIntoView({behavior:"smooth"});
+}
+document.addEventListener("DOMContentLoaded",init);
+
+</script>
+</body>
+</html>
