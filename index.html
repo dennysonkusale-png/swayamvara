@@ -165,6 +165,7 @@ fieldset{border:0;padding:0;margin:0 0 18px}
 
 /* step nav */
 .step-nav{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:14px 20px;border-top:1px solid var(--line);background:#fffdf9}
+.navgroup{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .step-nav .mid{font-size:12.5px;color:var(--muted)}
 
 /* ---------- Preview / document ---------- */
@@ -295,6 +296,7 @@ fieldset{border:0;padding:0;margin:0 0 18px}
 .guna-remark{padding:10px 12px;font-size:12px;background:#fffdf9;color:var(--muted);line-height:1.5}
 .ro-banner{background:linear-gradient(135deg,#7a1f2b,#a83244);color:#fff7ea;padding:10px 18px;display:flex;gap:14px;align-items:center;justify-content:center;font-size:13.5px;flex-wrap:wrap}
 .ro-banner[hidden]{display:none}
+.ro-banner .btn:not(.gold){background:#fff7ea;color:var(--maroon);border-color:transparent}
 .ro-only{display:none}
 body.readonly .ro-only{display:inline-flex}
 body.readonly .form-pane{display:none}
@@ -376,7 +378,10 @@ body.readonly .preview-pane{position:static;max-height:none}
     <nav class="stepper" id="stepper" aria-label="Steps"></nav>
     <div class="step-body" id="stepHost"></div>
     <div class="step-nav">
-      <button class="btn" id="navPrev">← Back</button>
+      <span class="navgroup">
+        <button class="btn" id="navPrev">← Back</button>
+        <button class="btn ghost sm" id="navReset">↺ <span id="navResetTxt">Reset</span></button>
+      </span>
       <span class="mid" id="navMid"></span>
       <button class="btn primary" id="navNext">Next →</button>
     </div>
@@ -387,7 +392,8 @@ body.readonly .preview-pane{position:static;max-height:none}
     <div class="preview-bar">
       <span class="lbl" id="previewLbl">Live preview · A4</span>
       <span class="grow"></span>
-      <button class="btn sm gold ro-only" id="btnEditPreview"><span class="ic">✎</span><span id="btnEditPreviewTxt">Edit</span></button>
+      <button class="btn sm" id="btnEditPreview"><span class="ic">←</span><span id="btnEditPreviewTxt">Back to edit</span></button>
+      <button class="btn sm" id="btnResetPreview"><span class="ic">↺</span><span id="btnResetPreviewTxt">Reset</span></button>
       <button class="btn sm" id="btnPrint"><span class="ic">🖨</span>Print</button>
       <button class="btn sm" id="btnPdf"><span class="ic">📄</span>PDF</button>
       <button class="btn sm" id="btnPng"><span class="ic">🖼</span>PNG</button>
@@ -854,7 +860,7 @@ const ACCENTS = ["","#b3441e","#8a1c2b","#c2547f","#0f6b63","#a97b12","#1b5e8a",
 const STEPS = [
   { id:"basics", name:"step1", sub:"step1s", sections:[
     { legend:"secPersonal", fields:[
-      {k:"name", l:"f_name", t:"text", req:true, ph:"e.g. Aarav Sharma"},
+      {k:"name", l:"f_name", t:"text", req:true, ph:"Your full name"},
       {k:"dob", l:"f_dob", t:"date", req:true},
       {k:"tob", l:"f_tob", t:"time"},
       {k:"pob", l:"f_pob", t:"text", ph:"e.g. Pune, Maharashtra"},
@@ -1507,7 +1513,7 @@ function init(){
   $("#tplModal").onclick=e=>{ if(e.target.id==="tplModal") $("#tplModal").classList.remove("open"); };
   $("#fontSelect").onchange=e=>{ state.font=e.target.value; saveState(); renderDoc(); };
   $("#invocationToggle").onchange=e=>{ state.invocation=e.target.checked; saveState(); renderDoc(); };
-  $("#resetBtn").onclick=()=>{ if(confirm(tL(state.lang,"resetConfirm"))){ localStorage.removeItem(LS_KEY); state=structuredClone(DEFAULT_STATE); $("#langSelect").value=state.lang; $("#docLangSelect").value=state.docLang; applyLang(); toast(tL(state.lang,"toastReady")); } };
+  $("#resetBtn").onclick=resetAll;
 
   $("#navPrev").onclick=()=>{ if(state.step>0){ state.step--; saveState(); renderAll(); } };
   $("#navNext").onclick=()=>{ if(state.step<STEPS.length-1){ state.step++; saveState(); renderAll(); } else { validateAndFinish(); } };
@@ -1535,7 +1541,9 @@ function init(){
   $("#btnGuna").onclick=runGuna;
   $("#roMakeOwn").onclick=makeOwn;
   $("#roEdit").onclick=editShared;
-  $("#btnEditPreview").onclick=editShared;
+  $("#btnEditPreview").onclick=backToEdit;
+  $("#btnResetPreview").onclick=resetAll;
+  $("#navReset").onclick=resetAll;
 
   window.addEventListener("resize",fitPreview);
   applyLang();
@@ -1563,7 +1571,8 @@ Object.assign(I18N.en, {
   roBanner:"You are viewing a shared portfolio (read-only).", roMakeOwn:"Create my own",
   roEdit:"Edit this portfolio", roEditShort:"Edit",
   editSharedConfirm:"Editing this shared portfolio will replace the portfolio saved on this device. Continue?",
-  editSharedToast:"Editing now — your changes are saved on this device"
+  editSharedToast:"Editing now — your changes are saved on this device",
+  backToEdit:"Back to edit", resetShort:"Reset"
 });
 Object.assign(I18N.hi, {
   more:"अधिक", moreTitle:"अतिरिक्त सुविधाएँ",
@@ -1582,7 +1591,8 @@ Object.assign(I18N.hi, {
   roBanner:"आप एक साझा किया गया परिचय देख रहे हैं (केवल-पठन)।", roMakeOwn:"अपना बनाएँ",
   roEdit:"यह परिचय संपादित करें", roEditShort:"संपादन",
   editSharedConfirm:"इस साझा परिचय को संपादित करने से इस डिवाइस पर सहेजा गया परिचय बदल जाएगा। जारी रखें?",
-  editSharedToast:"संपादन शुरू — बदलाव इस डिवाइस पर सहेजे जाएँगे"
+  editSharedToast:"संपादन शुरू — बदलाव इस डिवाइस पर सहेजे जाएँगे",
+  backToEdit:"संपादन पर वापस", resetShort:"रीसेट"
 });
 Object.assign(I18N.mr, {
   more:"अधिक", moreTitle:"अतिरिक्त सुविधा",
@@ -1601,7 +1611,8 @@ Object.assign(I18N.mr, {
   roBanner:"तुम्ही शेअर केलेला परिचय पाहत आहात (केवळ-वाचन).", roMakeOwn:"स्वतःचे तयार करा",
   roEdit:"हा परिचय संपादित करा", roEditShort:"संपादन",
   editSharedConfirm:"हा शेअर केलेला परिचय संपादित केल्यास या डिव्हाइसवर जतन केलेला परिचय बदलेल. सुरू ठेवायचे?",
-  editSharedToast:"संपादन सुरू — बदल या डिव्हाइसवर जतन होतील"
+  editSharedToast:"संपादन सुरू — बदल या डिव्हाइसवर जतन होतील",
+  backToEdit:"संपादनाकडे परत", resetShort:"रीसेट"
 });
 Object.assign(I18N.sa, {
   more:"अधिकम्", moreTitle:"अतिरिक्तसुविधाः",
@@ -1620,7 +1631,8 @@ Object.assign(I18N.sa, {
   roBanner:"भवान् सहभागिपरिचयं पश्यति (केवलपठनम्)।", roMakeOwn:"स्वीयं रचयतु",
   roEdit:"इमं परिचयं संपादयतु", roEditShort:"संपादनम्",
   editSharedConfirm:"अस्य सहभागिपरिचयस्य संपादनेन अस्मिन् यन्त्रे रक्षितः परिचयः परिवर्तिष्यते। अग्रे गच्छतु?",
-  editSharedToast:"संपादनम् आरब्धम् — परिवर्तनानि अस्मिन् यन्त्रे रक्ष्यन्ते"
+  editSharedToast:"संपादनम् आरब्धम् — परिवर्तनानि अस्मिन् यन्त्रे रक्ष्यन्ते",
+  backToEdit:"संपादनं प्रति पुनः", resetShort:"पुनःस्थापनम्"
 });
 
 /* ---- nakshatra + Ashtakoot tables ---- */
@@ -1688,7 +1700,8 @@ function applyExtraLabels(){
   set("gmBNameLbl","gmName"); set("gmGNameLbl","gmName");
   set("gmBNakLbl","gmNak"); set("gmGNakLbl","gmNak"); set("gunaBtnTxt","gmCalc");
   set("roBannerTxt","roBanner"); set("roMakeOwn","roMakeOwn");
-  set("roEditTxt","roEdit"); set("btnEditPreviewTxt","roEditShort");
+  set("roEditTxt","roEdit"); set("btnEditPreviewTxt","backToEdit");
+  set("navResetTxt","resetShort"); set("btnResetPreviewTxt","resetShort");
 }
 
 function fillGunaSelects(){
@@ -1808,6 +1821,41 @@ function tryLoadFromHash(){
   document.body.classList.add("readonly");
   const b=document.getElementById("roBanner"); if(b) b.hidden=false;
   return true;
+}
+
+/* Clear everything the user has entered and start again from step one.
+   Keeps the chosen language and the look (template / accent / typeface). */
+function resetAll(){
+  const L=state.lang;
+  if(!confirm(tL(L,"resetConfirm"))) return;
+  const keep={lang:state.lang, docLang:state.docLang, template:state.template, accent:state.accent, font:state.font, invocation:state.invocation};
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  state=structuredClone(DEFAULT_STATE);
+  Object.assign(state, keep);
+  state.step=0;
+  readOnly=false;
+  document.body.classList.remove("readonly","view-preview");
+  document.body.classList.add("view-edit");
+  const banner=document.getElementById("roBanner"); if(banner) banner.hidden=true;
+  const te=document.getElementById("tabEdit"), tp=document.getElementById("tabPreview");
+  if(te) te.classList.add("on"); if(tp) tp.classList.remove("on");
+  const ls=document.getElementById("langSelect"); if(ls) ls.value=state.lang;
+  const dl=document.getElementById("docLangSelect"); if(dl) dl.value=state.docLang;
+  saveState();
+  applyLang();
+  toast(tL(L,"toastReady"));
+}
+
+/* Go back to the form from the preview — and, from a shared read-only link,
+   leave read-only mode so the portfolio can be edited. */
+function backToEdit(){
+  if(readOnly){ editShared(); return; }
+  document.body.classList.remove("view-preview");
+  document.body.classList.add("view-edit");
+  const te=document.getElementById("tabEdit"), tp=document.getElementById("tabPreview");
+  if(te) te.classList.add("on"); if(tp) tp.classList.remove("on");
+  const fp=document.querySelector(".form-pane");
+  if(fp) fp.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 function renderAll(){ renderStepper(); renderForm(); renderDoc(); }
