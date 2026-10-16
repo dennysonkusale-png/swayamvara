@@ -22,7 +22,9 @@ a fitting name for a tool that helps you present yourself on your own terms.
 - **Exports** — PDF (multi-page A4), PNG, JPG, DOCX, and an **editable** PPTX that keeps its
   text editable in PowerPoint.
 - **Email & share** — email the portfolio, share to WhatsApp, or create a self-contained
-  **read-only link** that anyone can view and download but not edit.
+  **read-only link** that anyone can view and download. Anyone opening that link can tap
+  **Edit** to load the portfolio straight into the editor and carry on from there, on their
+  own device.
 - **India-specific biodata fields** — gotra, rashi, nakshatra, gana, nadi, manglik status,
   mool gaon, family values, diet, and more.
 - **Privacy toggles** — hide income, contact details or horoscope from the shared copy.
