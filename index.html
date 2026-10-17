@@ -326,6 +326,12 @@ body.readonly .layout{grid-template-columns:minmax(0,900px);justify-content:cent
 body.readonly .preview-pane{position:static;max-height:none}
 @media (max-width:520px){.gm-grid{grid-template-columns:1fr}}
 
+/* Template library shifts left on wide screens so the live preview stays visible */
+@media (min-width:1200px){
+  #tplModal{place-items:center start;padding-left:24px;background:rgba(40,20,10,.15)}
+  #tplModal .sheet{max-width:560px}
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width:1080px){
   .layout{grid-template-columns:1fr;gap:16px;padding:14px}
@@ -413,6 +419,7 @@ body.readonly .preview-pane{position:static;max-height:none}
     <div class="preview-bar">
       <span class="lbl" id="previewLbl">Live preview · A4</span>
       <span class="grow"></span>
+      <button class="btn sm" id="btnSample" aria-pressed="false"><span class="ic">👁</span><span id="btnSampleTxt">Sample</span></button>
       <button class="btn sm" id="btnEditPreview"><span class="ic">←</span><span id="btnEditPreviewTxt">Back to edit</span></button>
       <button class="btn sm" id="btnResetPreview"><span class="ic">↺</span><span id="btnResetPreviewTxt">Reset</span></button>
       <button class="btn sm" id="btnPrint"><span class="ic">🖨</span>Print</button>
@@ -1234,27 +1241,88 @@ function addPhotos(files){
    ============================================================ */
 function currentLang(){ return state.docLang || state.lang; }
 
+/* ---- sample preview: show the design filled in, without touching real data ---- */
+let sampleMode=false;
+const SAMPLE_BASE = {dob:"1996-04-18", tob:"06:45", maritalStatus:"neverMarried", blood:"B+",
+  weight:"72 kg", height:"5 ft 10 in / 178 cm", year:"2019", businessType:"salaried",
+  smoking:"no", drinking:"no", manglik:"manglikNo", gana:"manushya", diet:"pureVeg",
+  phone:"+91 98220 12345", whatsapp:"+91 98220 12345", emailAddr:"name@example.com"};
+const SAMPLE = {
+  en:{name:"Your Name", pob:"Pune, Maharashtra", motherTongue:"Marathi", fatherName:"Father's name",
+    fatherOcc:"Retired Bank Manager", motherName:"Mother's name", motherOcc:"Homemaker",
+    brothers:"1 elder", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
+    nativePlace:"Kolhapur", familyNote:"A close-knit, traditional Maharashtrian family settled in Pune for three generations.",
+    qualification:"Post-graduate", degree:"M.Tech, Computer Engineering", institution:"COEP Technological University, Pune",
+    occupation:"Software Engineer", jobTitle:"Senior Engineer", employer:"Infosys", workCity:"Pune", experience:"5 years",
+    income:"₹24 lakh per annum", religion:"Hindu", caste:"Brahmin", subCaste:"Deshastha", community:"Marathi",
+    gotra:"Kashyap", rashi:"Vrishabha", nakshatra:"Rohini", nadi:"Antya",
+    languagesSpoken:"Marathi, Hindi, English", hobbies:"Trekking, classical music, reading",
+    aboutMe:"A calm, family-oriented person who values honesty, simple living and lifelong learning.",
+    prefAge:"26–31 years", prefEducation:"Graduate or above", prefProfession:"Working professional",
+    prefCommunity:"Marathi / Brahmin", prefLocation:"Pune, Mumbai or Bengaluru", contactPerson:"Self", city:"Pune"},
+  hi:{name:"आपका नाम", pob:"पुणे, महाराष्ट्र", motherTongue:"मराठी", fatherName:"पिता का नाम",
+    fatherOcc:"सेवानिवृत्त बैंक प्रबंधक", motherName:"माता का नाम", motherOcc:"गृहिणी",
+    brothers:"1 बड़े", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
+    nativePlace:"कोल्हापुर", familyNote:"तीन पीढ़ियों से पुणे में बसा एक घनिष्ठ, पारंपरिक महाराष्ट्रीय परिवार।",
+    qualification:"स्नातकोत्तर", degree:"एम.टेक, कंप्यूटर इंजीनियरिंग", institution:"सीओईपी तकनीकी विश्वविद्यालय, पुणे",
+    occupation:"सॉफ़्टवेयर इंजीनियर", jobTitle:"वरिष्ठ इंजीनियर", employer:"इंफोसिस", workCity:"पुणे", experience:"5 वर्ष",
+    income:"₹24 लाख प्रति वर्ष", religion:"हिंदू", caste:"ब्राह्मण", subCaste:"देशस्थ", community:"मराठी",
+    gotra:"कश्यप", rashi:"वृषभ", nakshatra:"रोहिणी", nadi:"अंत्य",
+    languagesSpoken:"मराठी, हिंदी, अंग्रेज़ी", hobbies:"ट्रेकिंग, शास्त्रीय संगीत, पढ़ना",
+    aboutMe:"एक शांत, परिवार-प्रेमी व्यक्ति जो ईमानदारी और सादा जीवन को महत्व देता है।",
+    prefAge:"26–31 वर्ष", prefEducation:"स्नातक या उससे अधिक", prefProfession:"कार्यरत पेशेवर",
+    prefCommunity:"मराठी / ब्राह्मण", prefLocation:"पुणे, मुंबई या बेंगलुरु", contactPerson:"स्वयं", city:"पुणे"},
+  mr:{name:"तुमचे नाव", pob:"पुणे, महाराष्ट्र", motherTongue:"मराठी", fatherName:"वडिलांचे नाव",
+    fatherOcc:"सेवानिवृत्त बँक व्यवस्थापक", motherName:"आईचे नाव", motherOcc:"गृहिणी",
+    brothers:"1 मोठा", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
+    nativePlace:"कोल्हापूर", familyNote:"तीन पिढ्यांपासून पुण्यात स्थायिक, घट्ट बांधलेले पारंपरिक महाराष्ट्रीय कुटुंब.",
+    qualification:"पदव्युत्तर", degree:"एम.टेक, संगणक अभियांत्रिकी", institution:"सीओईपी तंत्रज्ञान विद्यापीठ, पुणे",
+    occupation:"सॉफ्टवेअर अभियंता", jobTitle:"वरिष्ठ अभियंता", employer:"इन्फोसिस", workCity:"पुणे", experience:"5 वर्षे",
+    income:"₹24 लाख वार्षिक", religion:"हिंदू", caste:"ब्राह्मण", subCaste:"देशस्थ", community:"मराठी",
+    gotra:"कश्यप", rashi:"वृषभ", nakshatra:"रोहिणी", nadi:"अंत्य",
+    languagesSpoken:"मराठी, हिंदी, इंग्रजी", hobbies:"ट्रेकिंग, शास्त्रीय संगीत, वाचन",
+    aboutMe:"शांत, कुटुंबवत्सल व्यक्ती जी प्रामाणिकपणा व साधे जीवन महत्त्वाचे मानते.",
+    prefAge:"26–31 वर्षे", prefEducation:"पदवीधर किंवा अधिक", prefProfession:"नोकरदार व्यावसायिक",
+    prefCommunity:"मराठी / ब्राह्मण", prefLocation:"पुणे, मुंबई किंवा बंगळुरू", contactPerson:"स्वतः", city:"पुणे"},
+  sa:{name:"भवतः नाम", pob:"पुणे, महाराष्ट्रः", motherTongue:"मराठी", fatherName:"पितुः नाम",
+    fatherOcc:"निवृत्तः बैङ्कप्रबन्धकः", motherName:"मातुः नाम", motherOcc:"गृहिणी",
+    brothers:"1 ज्येष्ठः", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
+    nativePlace:"कोल्हापुरम्", familyNote:"त्रिपुरुषैः पुण्यनगरे निवसत् घनिष्ठं पारम्परिकं महाराष्ट्रीयं कुटुम्बम्।",
+    qualification:"स्नातकोत्तरः", degree:"एम.टेक्, संगणकाभियन्त्रणम्", institution:"सीओईपी तन्त्रज्ञानविश्वविद्यालयः, पुणे",
+    occupation:"सङ्गणकाभियन्ता", jobTitle:"वरिष्ठः अभियन्ता", employer:"इन्फोसिस्", workCity:"पुणे", experience:"5 वर्षाणि",
+    income:"₹24 लक्षं वार्षिकम्", religion:"हिन्दुः", caste:"ब्राह्मणः", subCaste:"देशस्थः", community:"मराठी",
+    gotra:"कश्यपः", rashi:"वृषभः", nakshatra:"रोहिणी", nadi:"अन्त्या",
+    languagesSpoken:"मराठी, हिन्दी, आङ्ग्लम्", hobbies:"पर्वतारोहणम्, शास्त्रीयसङ्गीतम्, पठनम्",
+    aboutMe:"शान्तः कुटुम्बप्रियः जनः यः सत्यनिष्ठां सरलजीवनं च मन्यते।",
+    prefAge:"26–31 वर्षाणि", prefEducation:"स्नातकः उत अधिकः", prefProfession:"कार्यरतः व्यावसायिकः",
+    prefCommunity:"मराठी / ब्राह्मणः", prefLocation:"पुणे, मुम्बई वा बेङ्गळूरु", contactPerson:"स्वयम्", city:"पुणे"}
+};
+function D(){ return sampleMode ? Object.assign({}, SAMPLE_BASE, (SAMPLE[currentLang()]||SAMPLE.en)) : state.data; }
+function PH(){ return sampleMode ? [] : state.photos; }
+function PRIV(){ return sampleMode ? {i:true,c:true,h:true} : {i:state.showIncome,c:state.showContact,h:state.showHoroscope}; }
+
 function buildGroups(lang){
   const groups=[];
+  const d=D(), pv=PRIV();
   STEPS.forEach(step=>{
     step.sections.forEach(sec=>{
       const items=[];
       sec.fields.forEach(f=>{
         if(f.t==="photos"||f.t==="toggle") return;
         if(f.k==="showIncome"||f.k==="showContact"||f.k==="showHoroscope") return;
-        if(sec.legend==="secCareer" && f.k==="income" && !state.showIncome) return;
-        if(sec.legend==="secContact" && !state.showContact) return;
-        if(sec.legend==="secHoroscope" && !state.showHoroscope) return;
-        let v=state.data[f.k];
+        if(sec.legend==="secCareer" && f.k==="income" && !pv.i) return;
+        if(sec.legend==="secContact" && !pv.c) return;
+        if(sec.legend==="secHoroscope" && !pv.h) return;
+        let v=d[f.k];
         if(v===undefined||v===null||String(v).trim()==="") return;
         if(f.t==="select") v=tL(lang, v);
         items.push({k:tL(lang,f.l), v:String(v), full:!!f.full});
       });
       // derived: age
       if(sec.legend==="secPersonal"){
-        const a=calcAge(state.data.dob);
+        const a=calcAge(d.dob);
         if(a) items.push({k:tL(lang,"f_age"), v:a+" "+ (lang==="en"?"years":lang==="hi"?"वर्ष":lang==="mr"?"वर्षे":"वर्षाणि")});
-        if(state.data.dob) { const idx=items.findIndex(x=>x.k===tL(lang,"f_dob")); if(idx>=0) items[idx].v=fmtDate(state.data.dob); }
+        if(d.dob) { const idx=items.findIndex(x=>x.k===tL(lang,"f_dob")); if(idx>=0) items[idx].v=fmtDate(d.dob); }
       }
       if(items.length) groups.push({legend:tL(lang,sec.legend), items});
     });
@@ -1272,24 +1340,26 @@ function renderDoc(){
   doc.style.setProperty("--d-headfont",fontMap[state.font]||fontMap.serif);
   if(state.font==="devanagari") doc.style.setProperty("--d-font","'Noto Serif Devanagari','Mukta',serif");
 
-  const hasAny = Object.values(state.data).some(v=>String(v||"").trim()) || state.photos.length;
+  const hasAny = sampleMode || Object.values(state.data).some(v=>String(v||"").trim()) || state.photos.length;
   if(!hasAny){ doc.innerHTML=`<div class="empty-doc">🪔<br><br>${esc(tL(lang,"emptyDoc"))}</div>`; fitPreview(); return; }
 
+  const d=D();
   const groups=buildGroups(lang);
-  const name=state.data.name||"";
-  const subline=[state.data.occupation, state.data.city||state.data.workCity].filter(Boolean).join(" · ");
+  const name=d.name||"";
+  const subline=[d.occupation, d.city||d.workCity].filter(Boolean).join(" · ");
+  const pv=PRIV();
   const metaBits=[];
-  if(state.showContact){
-    if(state.data.phone) metaBits.push("📞 "+esc(state.data.phone));
-    if(state.data.whatsapp && state.data.whatsapp!==state.data.phone) metaBits.push("WhatsApp: "+esc(state.data.whatsapp));
-    if(state.data.emailAddr) metaBits.push("✉ "+esc(state.data.emailAddr));
+  if(pv.c){
+    if(d.phone) metaBits.push("📞 "+esc(d.phone));
+    if(d.whatsapp && d.whatsapp!==d.phone) metaBits.push("WhatsApp: "+esc(d.whatsapp));
+    if(d.emailAddr) metaBits.push("✉ "+esc(d.emailAddr));
   }
-  if(state.data.pob) metaBits.push("📍 "+esc(state.data.pob));
+  if(d.pob) metaBits.push("📍 "+esc(d.pob));
 
   let html="";
   if(state.invocation) html+=`<div class="doc-invocation">॥ श्री गणेशाय नमः ॥</div>`;
   html+=`<div class="doc-head">
-    <div class="photo">${state.photos[0]?`<img src="${state.photos[0]}" alt="">`:esc(tL(lang,"primaryPhoto"))}</div>
+    <div class="photo">${PH()[0]?`<img src="${PH()[0]}" alt="">`:esc(tL(lang,"primaryPhoto"))}</div>
     <div class="id">
       <h2>${esc(name||tL(lang,"f_name"))}</h2>
       ${subline?`<div class="sub">${esc(subline)}</div>`:""}
@@ -1305,9 +1375,9 @@ function renderDoc(){
     });
     html+=`</div></div>`;
   });
-  if(state.photos.length>1){
+  if(PH().length>1){
     html+=`<div class="sec"><div class="sec-title">${esc(tL(lang,"secPhotos"))}${motifDivider()}</div><div class="doc-photos">`;
-    state.photos.slice(1,7).forEach(p=>{ html+=`<img src="${p}" alt="">`; });
+    PH().slice(1,7).forEach(p=>{ html+=`<img src="${p}" alt="">`; });
     html+=`</div></div>`;
   }
   html+=`<div class="doc-foot">${esc(tL(lang,"docFooter"))}</div>`;
@@ -1599,7 +1669,11 @@ function init(){
     if(followDoc){ state.docLang=next; const dl=$("#docLangSelect"); if(dl) dl.value=next; }
     saveState(); applyLang();
   };
-  $("#tplBtn").onclick=()=>{ renderTemplates(); $("#tplModal").classList.add("open"); };
+  $("#tplBtn").onclick=()=>{
+    // if nothing has been entered yet, show a filled sample so each design can be judged at a glance
+    if(!Object.values(state.data).some(v=>String(v||"").trim()) && !state.photos.length) sampleMode=true;
+    renderTemplates(); updateSampleUI(); renderDoc(); $("#tplModal").classList.add("open");
+  };
   $("#tplClose").onclick=()=>$("#tplModal").classList.remove("open");
   $("#tplModal").onclick=e=>{ if(e.target.id==="tplModal") $("#tplModal").classList.remove("open"); };
   $("#fontSelect").onchange=e=>{ state.font=e.target.value; saveState(); renderDoc(); };
@@ -1633,6 +1707,7 @@ function init(){
   $("#roMakeOwn").onclick=makeOwn;
   $("#roEdit").onclick=editShared;
   $("#btnEditPreview").onclick=backToEdit;
+  $("#btnSample").onclick=toggleSample;
   $("#btnResetPreview").onclick=resetAll;
   $("#navReset").onclick=resetAll;
 
@@ -1667,7 +1742,11 @@ Object.assign(I18N.en, {
   motif:"Floral motif", motif_none:"None", motif_vine:"Floral vine", motif_rose:"Rose trellis",
   motif_paisley:"Paisley embroidery", motif_lotus:"Lotus", motif_mandala:"Mandala", motif_marigold:"Marigold garland",
   tpl_vine:"Floral Vine", tpl_rose:"Rose Trellis", tpl_paisley:"Paisley Embroidery",
-  tpl_marigold:"Marigold Festive", tpl_lotus:"Lotus Pond"
+  tpl_marigold:"Marigold Festive", tpl_lotus:"Lotus Pond",
+  sample:"Sample", previewSample:"Sample preview · A4",
+  sampleOn:"Sample preview on — your own details are untouched",
+  sampleOff:"Back to your own details",
+  emptyDoc:"Start filling the form, or tap Sample above to see how a finished portfolio looks."
 });
 Object.assign(I18N.hi, {
   more:"अधिक", moreTitle:"अतिरिक्त सुविधाएँ",
@@ -1691,7 +1770,11 @@ Object.assign(I18N.hi, {
   motif:"पुष्प अलंकरण", motif_none:"कोई नहीं", motif_vine:"पुष्प लता", motif_rose:"गुलाब जाली",
   motif_paisley:"कशीदाकारी", motif_lotus:"कमल", motif_mandala:"मंडल", motif_marigold:"गेंदा माला",
   tpl_vine:"पुष्प लता", tpl_rose:"गुलाब जाली", tpl_paisley:"कशीदाकारी",
-  tpl_marigold:"गेंदा उत्सव", tpl_lotus:"कमल सरोवर"
+  tpl_marigold:"गेंदा उत्सव", tpl_lotus:"कमल सरोवर",
+  sample:"नमूना", previewSample:"नमूना पूर्वावलोकन · A4",
+  sampleOn:"नमूना पूर्वावलोकन चालू — आपकी जानकारी अपरिवर्तित है",
+  sampleOff:"अपनी जानकारी पर वापस",
+  emptyDoc:"फ़ॉर्म भरना शुरू करें, या ऊपर 'नमूना' दबाकर देखें कि तैयार परिचय कैसा दिखता है।"
 });
 Object.assign(I18N.mr, {
   more:"अधिक", moreTitle:"अतिरिक्त सुविधा",
@@ -1715,7 +1798,11 @@ Object.assign(I18N.mr, {
   motif:"पुष्प अलंकार", motif_none:"काही नाही", motif_vine:"पुष्पवेल", motif_rose:"गुलाब जाळी",
   motif_paisley:"भरतकाम", motif_lotus:"कमळ", motif_mandala:"मंडळ", motif_marigold:"झेंडू माळ",
   tpl_vine:"पुष्पवेल", tpl_rose:"गुलाब जाळी", tpl_paisley:"भरतकाम",
-  tpl_marigold:"झेंडू उत्सव", tpl_lotus:"कमळ तळे"
+  tpl_marigold:"झेंडू उत्सव", tpl_lotus:"कमळ तळे",
+  sample:"नमुना", previewSample:"नमुना पूर्वावलोकन · A4",
+  sampleOn:"नमुना पूर्वावलोकन सुरू — तुमची माहिती बदललेली नाही",
+  sampleOff:"तुमच्या माहितीकडे परत",
+  emptyDoc:"फॉर्म भरणे सुरू करा, किंवा वर 'नमुना' दाबून पाहा की तयार परिचय कसा दिसतो."
 });
 Object.assign(I18N.sa, {
   more:"अधिकम्", moreTitle:"अतिरिक्तसुविधाः",
@@ -1739,7 +1826,11 @@ Object.assign(I18N.sa, {
   motif:"पुष्पालंकरणम्", motif_none:"न किमपि", motif_vine:"पुष्पलता", motif_rose:"गुलाबजालम्",
   motif_paisley:"कौशेयकर्म", motif_lotus:"कमलम्", motif_mandala:"मण्डलम्", motif_marigold:"स्थलकमलमाला",
   tpl_vine:"पुष्पलता", tpl_rose:"गुलाबजालम्", tpl_paisley:"कौशेयकर्म",
-  tpl_marigold:"स्थलकमलोत्सवः", tpl_lotus:"कमलसरः"
+  tpl_marigold:"स्थलकमलोत्सवः", tpl_lotus:"कमलसरः",
+  sample:"निदर्शनम्", previewSample:"निदर्शन-पूर्वदर्शनम् · A4",
+  sampleOn:"निदर्शन-पूर्वदर्शनं सक्रियम् — भवतः विवरणं अपरिवर्तितम्",
+  sampleOff:"भवतः विवरणं प्रति पुनः",
+  emptyDoc:"पत्रकं पूरयितुं आरभताम्, अथवा उपरि 'निदर्शनम्' नोदयित्वा पश्यतु यत् सिद्धः परिचयः कीदृशः दृश्यते।"
 });
 
 /* ---- nakshatra + Ashtakoot tables ---- */
@@ -1809,6 +1900,8 @@ function applyExtraLabels(){
   set("roBannerTxt","roBanner"); set("roMakeOwn","roMakeOwn");
   set("roEditTxt","roEdit"); set("btnEditPreviewTxt","backToEdit");
   set("navResetTxt","resetShort"); set("btnResetPreviewTxt","resetShort");
+  set("btnSampleTxt","sample");
+  updateSampleUI();
 }
 
 function fillGunaSelects(){
@@ -1963,6 +2056,20 @@ function backToEdit(){
   if(te) te.classList.add("on"); if(tp) tp.classList.remove("on");
   const fp=document.querySelector(".form-pane");
   if(fp) fp.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ---- sample preview controls ---- */
+function updateSampleUI(){
+  const L=state.lang;
+  const b=document.getElementById("btnSample");
+  if(b){ b.classList.toggle("gold",sampleMode); b.setAttribute("aria-pressed", sampleMode?"true":"false"); }
+  const pl=document.getElementById("previewLbl");
+  if(pl) pl.textContent = sampleMode ? tL(L,"previewSample") : tL(L,"livePreview");
+}
+function toggleSample(){
+  sampleMode=!sampleMode;
+  updateSampleUI(); renderDoc();
+  toast(tL(state.lang, sampleMode?"sampleOn":"sampleOff"));
 }
 
 function renderAll(){ renderStepper(); renderForm(); renderDoc(); }
