@@ -211,7 +211,10 @@ fieldset{border:0;padding:0;margin:0 0 18px}
 .doc-head .meta{font-size:12.5px;opacity:.85;margin-top:6px;line-height:1.5}
 /* ---- banner decoration: toran garland, pendant and sprays ---- */
 .doc-head > .photo,.doc-head > .id{position:relative;z-index:2}
-.doc-head.has-toran{padding-top:42px}
+.doc-head.has-banner{padding-top:var(--banner-pad,44px)}
+.doc-banner{position:absolute;top:0;left:0;right:0;height:var(--banner-pad,44px);display:flex;justify-content:space-between;align-items:flex-end;padding:0 8px 5px;pointer-events:none;z-index:1;color:var(--d-head-ink,#fff8ec);opacity:.92;overflow:hidden}
+.doc-banner > svg,.doc-banner .bc{display:block;flex:0 0 auto}
+.doc-banner .bc.flip{transform:scaleX(-1)}
 .doc-toran{position:absolute;top:0;left:0;right:0;height:34px;display:flex;justify-content:space-between;align-items:flex-start;padding:0 6px;pointer-events:none;z-index:1;color:var(--d-head-ink,#fff8ec);opacity:.92}
 .doc-toran .tl{display:block;flex:0 0 auto}
 .doc-toran .tb{display:block;flex:0 0 auto;margin-top:1px;opacity:.85}
@@ -219,6 +222,18 @@ fieldset{border:0;padding:0;margin:0 0 18px}
 .doc-spray{position:absolute;bottom:0;width:64px;height:40px;pointer-events:none;z-index:1;color:var(--d-head-ink,#fff8ec);opacity:.45}
 .doc-spray.l{left:2px}
 .doc-spray.r{right:2px;transform:scaleX(-1)}
+/* ---- optional floral border around the whole page ---- */
+.doc-frame{position:absolute;inset:9px;pointer-events:none;z-index:3;color:var(--d-accent,#7a1f2b)}
+.doc-frame::before{content:'';position:absolute;inset:0;border:1.4px solid currentColor;border-radius:3px;opacity:.45}
+.doc-frame::after{content:'';position:absolute;inset:5px;border:1px solid currentColor;border-radius:2px;opacity:.3}
+.doc-frame .fc{position:absolute;width:34px;height:34px;opacity:.75}
+.doc-frame .fc.tl{top:-9px;left:-9px}
+.doc-frame .fc.tr{top:-9px;right:-9px;transform:scaleX(-1)}
+.doc-frame .fc.bl{bottom:-9px;left:-9px;transform:scaleY(-1)}
+.doc-frame .fc.br{bottom:-9px;right:-9px;transform:scale(-1,-1)}
+.doc-frame .fe{position:absolute;width:44px;height:18px;opacity:.6}
+.doc-frame .fe.top{top:-10px;left:50%;transform:translateX(-50%)}
+.doc-frame .fe.bot{bottom:-10px;left:50%;transform:translateX(-50%)}
 .doc-body{padding:24px 44px 40px;position:relative}
 /* ---- floral / embroidery motif layer ---- */
 .doc-deco{position:absolute;inset:0;pointer-events:none;z-index:0;color:var(--d-accent,#7a1f2b)}
@@ -489,8 +504,12 @@ body.readonly .preview-pane{position:static;max-height:none}
           <label class="switch" style="border:0;padding:0"><input type="checkbox" id="invocationToggle"><span class="lab">श्री गणेशाय नमः</span></label>
         </div>
         <div class="grp">
-          <b id="toranLbl">Banner garland</b>
-          <label class="switch" style="border:0;padding:0"><input type="checkbox" id="toranToggle"><span class="lab">🌿 तोरण</span></label>
+          <b id="bannerLbl">Banner decoration</b>
+          <div class="motif-row" id="bannerRow"></div>
+        </div>
+        <div class="grp">
+          <b id="pageBorderLbl">Page border</b>
+          <label class="switch" style="border:0;padding:0"><input type="checkbox" id="pageBorderToggle"><span class="lab">🌿 <span id="pageBorderTxt">Floral border</span></span></label>
         </div>
       </div>
     </div>
@@ -1383,6 +1402,39 @@ const MOTIFS = {
     corner:{vb:"0 0 64 64", body:`<path d="M4 60V26C4 13 13 4 26 4h34" opacity=".7"/><circle cx="18" cy="18" r="6" fill="currentColor" stroke="none" opacity=".85"/><circle cx="34" cy="10" r="4.5" fill="currentColor" stroke="none" opacity=".7"/><circle cx="10" cy="34" r="4.5" fill="currentColor" stroke="none" opacity=".7"/><circle cx="26" cy="26" r="3" fill="currentColor" stroke="none" opacity=".5"/>`}
   }
 };
+/* ============================================================
+   2c. Banner decorations
+   A picker of decorative elements that sit around the top coloured
+   banner of the portfolio. Each draws in currentColor, so it takes
+   the template's header ink automatically. Floral lines are the
+   default; users can swap in any other element freely.
+   ============================================================ */
+const BANNER_IDS = ["floralline","toran","vine","lace","paisley","marigold","pearl","none"];
+const BANNER_UNITS = {
+  floralline:{ pad:44,
+    unit:{vb:"0 0 48 18", w:48, h:18, body:`<path d="M0 13c8 0 12-6 24-6s16 6 24 6" opacity=".55"/><path d="M13 9c-1-3-4-5-7-5 0 3 3 6 7 5z" fill="currentColor" stroke="none" opacity=".5"/><path d="M35 9c1-3 4-5 7-5 0 3-3 6-7 5z" fill="currentColor" stroke="none" opacity=".5"/><circle cx="24" cy="9" r="2.8" fill="currentColor" stroke="none" opacity=".75"/><circle cx="24" cy="9" r="1.1" fill="currentColor" stroke="none" opacity=".4"/>`},
+    corner:{vb:"0 0 62 30", w:62, h:30, body:`<path d="M2 27c11 0 17-6 19-15 2-8 9-12 17-11" opacity=".7"/><circle cx="21" cy="13" r="4.2" fill="currentColor" stroke="none" opacity=".7"/><circle cx="21" cy="13" r="1.7" fill="currentColor" stroke="none" opacity=".45"/><path d="M37 5c2-2 5-2 7 0-2 2-5 2-7 0z" fill="currentColor" stroke="none" opacity=".5"/><path d="M45 9c2-2 5-2 7 0-2 2-5 2-7 0z" fill="currentColor" stroke="none" opacity=".45"/>`},
+    preview:{vb:"0 0 110 16", body:`<path d="M4 9c10 0 14-5 24-5s14 5 24 5 14-5 24-5 14 5 24 5" opacity=".6"/><circle cx="28" cy="4" r="2.6" fill="currentColor" stroke="none" opacity=".8"/><circle cx="52" cy="9" r="2.6" fill="currentColor" stroke="none" opacity=".8"/><circle cx="76" cy="4" r="2.6" fill="currentColor" stroke="none" opacity=".8"/><path d="M20 6c-1-2-3-3-5-3 0 2 2 4 5 3z" fill="currentColor" stroke="none" opacity=".5"/><path d="M90 6c1-2 3-3 5-3 0 2-2 4-5 3z" fill="currentColor" stroke="none" opacity=".5"/>`} },
+  toran:{ pad:44, toran:true,
+    preview:{vb:"0 0 110 16", body:`<g fill="currentColor" stroke="none"><path d="M14 2c3 5 5 9 5 12a5 5 0 0 1-10 0c0-3 2-7 5-12z" opacity=".85"/><path d="M38 2c3 5 5 9 5 12a5 5 0 0 1-10 0c0-3 2-7 5-12z" opacity=".85"/><path d="M62 2c3 5 5 9 5 12a5 5 0 0 1-10 0c0-3 2-7 5-12z" opacity=".85"/><path d="M86 2c3 5 5 9 5 12a5 5 0 0 1-10 0c0-3 2-7 5-12z" opacity=".85"/><circle cx="26" cy="9" r="3" opacity=".7"/><circle cx="50" cy="9" r="3" opacity=".7"/><circle cx="74" cy="9" r="3" opacity=".7"/><circle cx="98" cy="9" r="3" opacity=".7"/></g>`} },
+  vine:{ pad:40,
+    unit:{vb:"0 0 40 18", w:40, h:18, body:`<path d="M0 9c10-6 20 6 40 0" opacity=".6"/><ellipse cx="10" cy="6" rx="4.2" ry="2.5" fill="currentColor" stroke="none" opacity=".55" transform="rotate(-20 10 6)"/><ellipse cx="22" cy="12" rx="4.2" ry="2.5" fill="currentColor" stroke="none" opacity=".5" transform="rotate(20 22 12)"/><ellipse cx="32" cy="6" rx="3.4" ry="2" fill="currentColor" stroke="none" opacity=".5" transform="rotate(-20 32 6)"/>`},
+    corner:{vb:"0 0 54 26", w:54, h:26, body:`<path d="M2 23c9 0 14-5 16-12 1-6 7-9 13-8" opacity=".7"/><ellipse cx="18" cy="10" rx="4" ry="2.4" fill="currentColor" stroke="none" opacity=".55" transform="rotate(-25 18 10)"/><ellipse cx="33" cy="6" rx="3.6" ry="2.1" fill="currentColor" stroke="none" opacity=".5" transform="rotate(-15 33 6)"/>`},
+    preview:{vb:"0 0 110 16", body:`<path d="M4 9c14-8 28 8 42 0s28-8 42 0" opacity=".6"/><ellipse cx="22" cy="5" rx="5" ry="3" fill="currentColor" stroke="none" opacity=".55" transform="rotate(-20 22 5)"/><ellipse cx="48" cy="13" rx="5" ry="3" fill="currentColor" stroke="none" opacity=".5" transform="rotate(20 48 13)"/><ellipse cx="74" cy="5" rx="5" ry="3" fill="currentColor" stroke="none" opacity=".55" transform="rotate(-20 74 5)"/>`} },
+  lace:{ pad:36,
+    unit:{vb:"0 0 40 16", w:40, h:16, body:`<path d="M0 3h40" opacity=".35"/><path d="M0 5c5 0 5 9 10 9s5-9 10-9 5 9 10 9 5-9 10-9" opacity=".7"/><circle cx="10" cy="3" r="1.5" fill="currentColor" stroke="none" opacity=".6"/><circle cx="30" cy="3" r="1.5" fill="currentColor" stroke="none" opacity=".6"/>`},
+    preview:{vb:"0 0 110 16", body:`<path d="M4 4h102" opacity=".35"/><path d="M4 6c6 0 6 9 12 9s6-9 12-9 6 9 12 9 6-9 12-9 6 9 12 9 6-9 12-9 6 9 12 9 6-9 12-9" opacity=".7"/>`} },
+  paisley:{ pad:38,
+    unit:{vb:"0 0 34 20", w:34, h:20, body:`<path d="M19 3c5 0 8 4 8 8s-3 7-7 7-6-2-6-5 2-4 4-4 3 1 3 3" opacity=".75"/><circle cx="17" cy="12" r="1.7" fill="currentColor" stroke="none" opacity=".6"/><circle cx="10" cy="5" r="1.7" fill="currentColor" stroke="none" opacity=".5"/>`},
+    preview:{vb:"0 0 110 16", body:`<path d="M28 13c-5-2-7-7-5-11 2-4 9-4 11 0 1 3-1 6-4 7-2 1-4-1-4-2 0-1 1-2 3-2" opacity=".75"/><path d="M76 3c5 2 7 7 5 11-2 4-9 4-11 0-1-3 1-6 4-7 2-1 4 1 4 2 0 1-1 2-3 2" opacity=".75"/><circle cx="52" cy="8" r="2" fill="currentColor" stroke="none" opacity=".6"/>`} },
+  marigold:{ pad:38,
+    unit:{vb:"0 0 26 20", w:26, h:20, body:`<circle cx="13" cy="10" r="7.5" fill="currentColor" stroke="none" opacity=".25"/><circle cx="13" cy="10" r="4.6" fill="currentColor" stroke="none" opacity=".5"/><circle cx="13" cy="10" r="1.9" fill="currentColor" stroke="none" opacity=".8"/>`},
+    preview:{vb:"0 0 110 16", body:`<circle cx="20" cy="8" r="6" fill="currentColor" stroke="none" opacity=".25"/><circle cx="20" cy="8" r="3.6" fill="currentColor" stroke="none" opacity=".55"/><circle cx="48" cy="8" r="6" fill="currentColor" stroke="none" opacity=".25"/><circle cx="48" cy="8" r="3.6" fill="currentColor" stroke="none" opacity=".55"/><circle cx="76" cy="8" r="6" fill="currentColor" stroke="none" opacity=".25"/><circle cx="76" cy="8" r="3.6" fill="currentColor" stroke="none" opacity=".55"/><circle cx="98" cy="8" r="4.4" fill="currentColor" stroke="none" opacity=".4"/>`} },
+  pearl:{ pad:34,
+    unit:{vb:"0 0 16 14", w:16, h:14, body:`<circle cx="8" cy="7" r="4.8" opacity=".5"/><circle cx="8" cy="7" r="2.3" fill="currentColor" stroke="none" opacity=".75"/>`},
+    preview:{vb:"0 0 110 16", body:`<circle cx="16" cy="8" r="4.6" opacity=".55"/><circle cx="16" cy="8" r="2.2" fill="currentColor" stroke="none" opacity=".8"/><circle cx="40" cy="8" r="4.6" opacity=".55"/><circle cx="40" cy="8" r="2.2" fill="currentColor" stroke="none" opacity=".8"/><circle cx="64" cy="8" r="4.6" opacity=".55"/><circle cx="64" cy="8" r="2.2" fill="currentColor" stroke="none" opacity=".8"/><circle cx="88" cy="8" r="4.6" opacity=".55"/><circle cx="88" cy="8" r="2.2" fill="currentColor" stroke="none" opacity=".8"/>`} },
+  none:{ pad:0 }
+};
 function svgPart(p,w,h){
   if(!p) return "";
   return `<svg viewBox="${p.vb}" width="${w}" height="${h}" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">${p.body}</svg>`;
@@ -1515,7 +1567,7 @@ const STEPS = [
    ============================================================ */
 const LS_KEY = "swavritta.v1";
 const DEFAULT_STATE = {
-  lang:"en", docLang:"en", template:"patta", motif:"vine", accent:"", font:"serif", invocation:true, toran:true,
+  lang:"en", docLang:"en", template:"patta", motif:"vine", accent:"", font:"serif", invocation:true, banner:"floralline", pageBorder:false,
   data:{}, photos:[], step:0,
   showIncome:true, showContact:true, showHoroscope:true,
 };
@@ -1527,7 +1579,11 @@ function loadState(){
     const raw = localStorage.getItem(LS_KEY);
     if(!raw) return structuredClone(DEFAULT_STATE);
     const s = JSON.parse(raw);
-    return Object.assign(structuredClone(DEFAULT_STATE), s, {data: s.data||{}, photos: s.photos||[]});
+    const st = Object.assign(structuredClone(DEFAULT_STATE), s, {data: s.data||{}, photos: s.photos||[]});
+    // migrate the old toran on/off flag to the new banner picker
+    if(s.banner===undefined && s.toran!==undefined) st.banner = s.toran ? "toran" : "none";
+    if(!BANNER_UNITS[st.banner]) st.banner="floralline";
+    return st;
   }catch(e){ return structuredClone(DEFAULT_STATE); }
 }
 let saveTimer=null;
@@ -1790,8 +1846,7 @@ function buildGroups(lang){
 }
 
 /* ---- banner decoration: mango-leaf toran garland, floral pendant, corner sprays ---- */
-function headDeco(){
-  if(!state.toran) return "";
+function toranDeco(){
   const leaf='<span class="tl"><svg viewBox="0 0 18 30" width="18" height="30"><path d="M9 1c4 6 6 12 6 16a6 6 0 0 1-12 0c0-4 2-10 6-16z" fill="currentColor" opacity=".85"/><path d="M9 6v18" stroke="currentColor" stroke-width=".7" opacity=".4" fill="none"/></svg></span>';
   const bead='<span class="tb"><svg viewBox="0 0 12 12" width="12" height="12"><circle cx="6" cy="6" r="4" fill="currentColor" opacity=".9"/><circle cx="6" cy="6" r="1.5" fill="currentColor" opacity=".5"/></svg></span>';
   let row="";
@@ -1801,11 +1856,41 @@ function headDeco(){
   const spray='<svg viewBox="0 0 64 40" width="64" height="40"><g fill="currentColor"><path d="M4 38c12-2 22-9 27-21-12 4-24 11-27 21z" opacity=".55"/><path d="M14 40c10 2 21 0 30-7-11-2-23 0-30 7z" opacity=".45"/><circle cx="16" cy="15" r="5.5" opacity=".9"/><circle cx="27" cy="21" r="4" opacity=".7"/><circle cx="10" cy="24" r="4" opacity=".7"/><circle cx="19" cy="26" r="2.6" opacity=".5"/></g></svg>';
   return `<div class="doc-toran" aria-hidden="true">${row}</div>${pendant}<span class="doc-spray l">${spray}</span><span class="doc-spray r">${spray}</span>`;
 }
+/* the chosen banner element, laid around the top coloured banner */
+function headDeco(){
+  const b=state.banner||"floralline";
+  if(b==="none") return "";
+  if(b==="toran") return toranDeco();
+  const u=BANNER_UNITS[b];
+  if(!u||!u.unit) return "";
+  const inner=760-(u.corner?2*u.corner.w:0);
+  const n=Math.max(4,Math.round(inner/(u.unit.w||40)));
+  let row="";
+  for(let i=0;i<n;i++) row+=svgPart(u.unit,u.unit.w,u.unit.h);
+  const c=u.corner?`<span class="bc">${svgPart(u.corner,u.corner.w,u.corner.h)}</span>`:"";
+  const c2=u.corner?`<span class="bc flip">${svgPart(u.corner,u.corner.w,u.corner.h)}</span>`:"";
+  return `<div class="doc-banner" aria-hidden="true">${c}${row}${c2}</div>`;
+}
+/* optional floral border drawn around the whole page */
+function pageBorder(){
+  if(!state.pageBorder) return "";
+  const ros={vb:"0 0 34 34", body:`<circle cx="17" cy="17" r="6" fill="currentColor" stroke="none" opacity=".55"/><circle cx="17" cy="17" r="2.4" fill="currentColor" stroke="none" opacity=".35"/><path d="M17 2c2 4 2 8 0 11-2-3-2-7 0-11z" fill="currentColor" stroke="none" opacity=".45"/><path d="M17 32c-2-4-2-8 0-11 2 3 2 7 0 11z" fill="currentColor" stroke="none" opacity=".45"/><path d="M2 17c4-2 8-2 11 0-3 2-7 2-11 0z" fill="currentColor" stroke="none" opacity=".45"/><path d="M32 17c-4 2-8 2-11 0 3-2 7-2 11 0z" fill="currentColor" stroke="none" opacity=".45"/>`};
+  const sprig={vb:"0 0 44 18", body:`<path d="M2 9c10-7 20 7 40 0" opacity=".6"/><ellipse cx="12" cy="5" rx="4.6" ry="2.6" fill="currentColor" stroke="none" opacity=".5" transform="rotate(-20 12 5)"/><ellipse cx="24" cy="13" rx="4.6" ry="2.6" fill="currentColor" stroke="none" opacity=".45" transform="rotate(20 24 13)"/><ellipse cx="35" cy="5" rx="3.8" ry="2.2" fill="currentColor" stroke="none" opacity=".45" transform="rotate(-20 35 5)"/>`};
+  const r=svgPart(ros,34,34), s=svgPart(sprig,44,18);
+  return `<div class="doc-frame" aria-hidden="true">`+
+    `<span class="fc tl">${r}</span><span class="fc tr">${r}</span>`+
+    `<span class="fc bl">${r}</span><span class="fc br">${r}</span>`+
+    `<span class="fe top">${s}</span><span class="fe bot">${s}</span></div>`;
+}
 function renderDoc(){
   const lang=currentLang();
   const doc=$("#doc");
   doc.dataset.tpl=state.template;
   doc.dataset.motif=state.motif||"none";
+  const _bn=BANNER_UNITS[state.banner]?state.banner:"floralline";
+  doc.dataset.banner=_bn;
+  doc.style.setProperty("--banner-pad",((BANNER_UNITS[_bn]||BANNER_UNITS.none).pad||0)+"px");
+  doc.classList.toggle("has-frame",!!state.pageBorder);
   if(state.accent) doc.style.setProperty("--d-accent",state.accent); else doc.style.removeProperty("--d-accent");
   const fontMap={serif:"'Cormorant Garamond',serif",devanagari:"'Noto Serif Devanagari',serif",sans:"'Inter','Mukta',sans-serif"};
   doc.style.setProperty("--d-headfont",fontMap[state.font]||fontMap.serif);
@@ -1829,7 +1914,7 @@ function renderDoc(){
 
   let html="";
   if(state.invocation) html+=`<div class="doc-invocation">॥ श्री गणेशाय नमः ॥</div>`;
-  html+=`<div class="doc-head${state.toran?" has-toran":""}">
+  html+=`<div class="doc-head${state.banner!=="none"?" has-banner":""}">
     ${headDeco()}
     <div class="photo">${PH()[0]?`<img src="${PH()[0]}" alt="">`:esc(tL(lang,"primaryPhoto"))}</div>
     <div class="id">
@@ -1854,6 +1939,7 @@ function renderDoc(){
   }
   html+=`<div class="doc-foot">${esc(tL(lang,"docFooter"))}</div>`;
   html+=`</div>`;
+  html+=pageBorder();
   doc.innerHTML=html;
   fitPreview();
 }
@@ -2068,12 +2154,15 @@ function renderTemplates(){
   });
   $("#fontSelect").value=state.font;
   $("#invocationToggle").checked=!!state.invocation;
-  $("#toranToggle").checked=!!state.toran;
+  $("#pageBorderToggle").checked=!!state.pageBorder;
   $("#tplTitle").textContent=tL(L,"templateLib");
   $("#accentLbl").textContent=tL(L,"accent");
   $("#fontLbl").textContent=tL(L,"typeface");
   $("#invLbl").textContent=tL(L,"invocation");
   $("#motifLbl").textContent=tL(L,"motif");
+  $("#bannerLbl").textContent=tL(L,"banner");
+  $("#pageBorderLbl").textContent=tL(L,"pageBorder");
+  $("#pageBorderTxt").textContent=tL(L,"floralBorder");
   // floral / embroidery motif picker
   const mrow=$("#motifRow"); mrow.innerHTML="";
   MOTIF_IDS.forEach(id=>{
@@ -2084,6 +2173,17 @@ function renderTemplates(){
     b.innerHTML=prev+`<span>${esc(tL(L,"motif_"+id))}</span>`;
     b.onclick=()=>{ state.motif=id; saveState(); renderTemplates(); renderDoc(); };
     mrow.appendChild(b);
+  });
+  // banner decoration picker
+  const brow=$("#bannerRow"); brow.innerHTML="";
+  BANNER_IDS.forEach(id=>{
+    const b=document.createElement("button");
+    b.className="motif-btn"+(state.banner===id?" on":"");
+    const u=BANNER_UNITS[id];
+    const prev=(u&&u.preview)?svgPart(u.preview,110,16):'<svg width="110" height="16" viewBox="0 0 110 16"><line x1="12" y1="8" x2="98" y2="8" stroke="#c9c0ae" stroke-width="1.5" stroke-dasharray="4 4"/></svg>';
+    b.innerHTML=prev+`<span>${esc(tL(L,"banner_"+id))}</span>`;
+    b.onclick=()=>{ state.banner=id; saveState(); renderTemplates(); renderDoc(); };
+    brow.appendChild(b);
   });
 }
 
@@ -2151,7 +2251,7 @@ function init(){
   $("#tplModal").onclick=e=>{ if(e.target.id==="tplModal") $("#tplModal").classList.remove("open"); };
   $("#fontSelect").onchange=e=>{ state.font=e.target.value; saveState(); renderDoc(); };
   $("#invocationToggle").onchange=e=>{ state.invocation=e.target.checked; saveState(); renderDoc(); };
-  $("#toranToggle").onchange=e=>{ state.toran=e.target.checked; saveState(); renderDoc(); };
+  $("#pageBorderToggle").onchange=e=>{ state.pageBorder=e.target.checked; saveState(); renderDoc(); };
   $("#resetBtn").onclick=resetAll;
 
   $("#navPrev").onclick=()=>{ if(state.step>0){ state.step--; saveState(); renderAll(); } };
@@ -2221,7 +2321,10 @@ Object.assign(I18N.en, {
   sampleOn:"Sample preview on — your own details are untouched",
   sampleOff:"Back to your own details",
   emptyDoc:"Start filling the form, or tap Sample above to see how a finished portfolio looks.",
-  toran:"Banner garland",
+  banner:"Banner decoration", banner_floralline:"Floral lines", banner_toran:"Toran garland",
+  banner_vine:"Leaf vine", banner_lace:"Lace edge", banner_paisley:"Paisley",
+  banner_marigold:"Marigold", banner_pearl:"Pearls", banner_none:"None",
+  pageBorder:"Page border", floralBorder:"Floral border",
   privacyNote:"Your details stay on this device — nothing is uploaded to any server."
 });
 Object.assign(I18N.hi, {
@@ -2251,7 +2354,10 @@ Object.assign(I18N.hi, {
   sampleOn:"नमूना पूर्वावलोकन चालू — आपकी जानकारी अपरिवर्तित है",
   sampleOff:"अपनी जानकारी पर वापस",
   emptyDoc:"फ़ॉर्म भरना शुरू करें, या ऊपर 'नमूना' दबाकर देखें कि तैयार परिचय कैसा दिखता है।",
-  toran:"तोरण",
+  banner:"बैनर अलंकरण", banner_floralline:"पुष्प रेखाएँ", banner_toran:"तोरण माला",
+  banner_vine:"पत्ती लता", banner_lace:"लेस किनारा", banner_paisley:"कैरी बूटी",
+  banner_marigold:"गेंदा", banner_pearl:"मोती", banner_none:"कोई नहीं",
+  pageBorder:"पृष्ठ सीमा", floralBorder:"पुष्प सीमा",
   privacyNote:"आपकी जानकारी इसी डिवाइस पर रहती है — किसी सर्वर पर अपलोड नहीं होती।"
 });
 Object.assign(I18N.mr, {
@@ -2281,7 +2387,10 @@ Object.assign(I18N.mr, {
   sampleOn:"नमुना पूर्वावलोकन सुरू — तुमची माहिती बदललेली नाही",
   sampleOff:"तुमच्या माहितीकडे परत",
   emptyDoc:"फॉर्म भरणे सुरू करा, किंवा वर 'नमुना' दाबून पाहा की तयार परिचय कसा दिसतो.",
-  toran:"तोरण",
+  banner:"बॅनर अलंकार", banner_floralline:"पुष्प रेषा", banner_toran:"तोरण माळ",
+  banner_vine:"पानांची वेल", banner_lace:"लेस कडा", banner_paisley:"कैरी",
+  banner_marigold:"झेंडू", banner_pearl:"मोती", banner_none:"काही नाही",
+  pageBorder:"पृष्ठ किनारा", floralBorder:"पुष्प किनारा",
   privacyNote:"तुमची माहिती याच डिव्हाइसवर राहते — कोणत्याही सर्व्हरवर अपलोड होत नाही."
 });
 Object.assign(I18N.sa, {
@@ -2311,7 +2420,10 @@ Object.assign(I18N.sa, {
   sampleOn:"निदर्शन-पूर्वदर्शनं सक्रियम् — भवतः विवरणं अपरिवर्तितम्",
   sampleOff:"भवतः विवरणं प्रति पुनः",
   emptyDoc:"पत्रकं पूरयितुं आरभताम्, अथवा उपरि 'निदर्शनम्' नोदयित्वा पश्यतु यत् सिद्धः परिचयः कीदृशः दृश्यते।",
-  toran:"तोरणम्",
+  banner:"पट्टालंकरणम्", banner_floralline:"पुष्परेखाः", banner_toran:"तोरणमाला",
+  banner_vine:"पर्णलता", banner_lace:"जालकिनारा", banner_paisley:"आम्राकृतिः",
+  banner_marigold:"स्थलकमलम्", banner_pearl:"मुक्ताः", banner_none:"न किमपि",
+  pageBorder:"पृष्ठसीमा", floralBorder:"पुष्पसीमा",
   privacyNote:"भवतः विवरणम् अस्मिन् एव यन्त्रे तिष्ठति — कस्मिंश्चित् अपि सर्वरे न प्रेष्यते।"
 });
 
@@ -2382,7 +2494,8 @@ function applyExtraLabels(){
   set("roBannerTxt","roBanner"); set("roMakeOwn","roMakeOwn");
   set("roEditTxt","roEdit"); set("btnEditPreviewTxt","backToEdit");
   set("navResetTxt","resetShort"); set("btnResetPreviewTxt","resetShort");
-  set("btnSampleTxt","sample"); set("toranLbl","toran"); set("privacyLineTxt","privacyNote");
+  set("btnSampleTxt","sample"); set("privacyLineTxt","privacyNote");
+  set("bannerLbl","banner"); set("pageBorderLbl","pageBorder"); set("pageBorderTxt","floralBorder");
   updateSampleUI();
 }
 
@@ -2420,7 +2533,7 @@ function renderGunaResult(r){
 
 /* ---- save / load JSON ---- */
 function saveJsonFile(){
-  const payload={v:1,app:"swavritta",state:{data:state.data,photos:state.photos,lang:state.lang,docLang:state.docLang,template:state.template,motif:state.motif,accent:state.accent,font:state.font,invocation:state.invocation,toran:state.toran,showIncome:state.showIncome,showContact:state.showContact,showHoroscope:state.showHoroscope}};
+  const payload={v:1,app:"swavritta",state:{data:state.data,photos:state.photos,lang:state.lang,docLang:state.docLang,template:state.template,motif:state.motif,accent:state.accent,font:state.font,invocation:state.invocation,banner:state.banner,pageBorder:state.pageBorder,showIncome:state.showIncome,showContact:state.showContact,showHoroscope:state.showHoroscope}};
   saveBlob(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}), safeName()+"_Swavritta_data.json");
   toast(tL(state.lang,"toastDownloaded"));
 }
@@ -2432,7 +2545,9 @@ function loadJsonFile(file){
       state.data=s.data||{}; state.photos=s.photos||[];
       state.lang=s.lang||state.lang; state.docLang=s.docLang||state.lang;
       state.template=s.template||state.template; state.accent=s.accent||""; state.font=s.font||"serif"; state.motif=s.motif||state.motif;
-      state.invocation=s.invocation!==false; state.toran=s.toran!==false;
+      state.invocation=s.invocation!==false;
+      state.banner=(s.banner&&BANNER_UNITS[s.banner])?s.banner:(s.toran===false?"none":"floralline");
+      state.pageBorder=!!s.pageBorder;
       state.showIncome=s.showIncome!==false; state.showContact=s.showContact!==false; state.showHoroscope=s.showHoroscope!==false;
       state.step=0; saveState();
       document.getElementById("langSelect").value=state.lang;
@@ -2446,7 +2561,7 @@ function loadJsonFile(file){
 
 /* ---- shareable read-only link ---- */
 function buildShareLink(){
-  const payload={d:state.data,s:{i:state.showIncome,c:state.showContact,h:state.showHoroscope},t:state.template,a:state.accent,f:state.font,v:state.invocation?1:0,l:state.docLang,n:state.data.name||"",m:state.motif,g:state.toran?1:0};
+  const payload={d:state.data,s:{i:state.showIncome,c:state.showContact,h:state.showHoroscope},t:state.template,a:state.accent,f:state.font,v:state.invocation?1:0,l:state.docLang,n:state.data.name||"",m:state.motif,bn:state.banner,pb:state.pageBorder?1:0};
   if(document.getElementById("sharePhotos").checked) payload.ph=state.photos;
   const json=JSON.stringify(payload);
   const base=location.href.split("#")[0];
@@ -2498,7 +2613,10 @@ function tryLoadFromHash(){
   state.data=p.d||{}; state.photos=p.ph||[];
   state.showIncome=!!(p.s&&p.s.i); state.showContact=!!(p.s&&p.s.c); state.showHoroscope=!!(p.s&&p.s.h);
   state.template=p.t||"patta"; state.accent=p.a||""; state.font=p.f||"serif"; state.motif=p.m||"vine";
-  state.invocation=!!p.v; state.toran=(p.g===undefined?true:!!p.g); state.docLang=p.l||"en"; state.lang=state.docLang;
+  state.invocation=!!p.v;
+  state.banner=(p.bn&&BANNER_UNITS[p.bn])?p.bn:(p.g===false?"none":"floralline");
+  state.pageBorder=!!p.pb;
+  state.docLang=p.l||"en"; state.lang=state.docLang;
   document.body.classList.remove("view-edit","view-preview");
   document.body.classList.add("readonly");
   const b=document.getElementById("roBanner"); if(b) b.hidden=false;
@@ -2510,7 +2628,7 @@ function tryLoadFromHash(){
 function resetAll(){
   const L=state.lang;
   if(!confirm(tL(L,"resetConfirm"))) return;
-  const keep={lang:state.lang, docLang:state.docLang, template:state.template, motif:state.motif, accent:state.accent, font:state.font, invocation:state.invocation, toran:state.toran};
+  const keep={lang:state.lang, docLang:state.docLang, template:state.template, motif:state.motif, accent:state.accent, font:state.font, invocation:state.invocation, banner:state.banner, pageBorder:state.pageBorder};
   try{ localStorage.removeItem(LS_KEY); }catch(e){}
   state=structuredClone(DEFAULT_STATE);
   Object.assign(state, keep);
