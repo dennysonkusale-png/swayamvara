@@ -1,12 +1,14 @@
-# स्वयंवर · Swayamvara
+# स्ववृत्त · Swavritta
 
 A free, **fully self-contained** marriage portfolio (biodata) builder for Indian users. One
 HTML file, no server, no sign-up, no build step — and **nothing you type ever leaves your device.**
 
-![Swayamvara — the editor on the left, the live A4 portfolio preview on the right](screenshot.png)
+![Swavritta — the editor on the left, the live A4 portfolio preview on the right](screenshot.png)
 
-*Swayamvara* (स्वयंवर) was the ancient Vedic ceremony in which a bride chose her own groom —
-a fitting name for a tool that helps you present yourself on your own terms.
+*Swavritta* (स्ववृत्त) is the Hindi and Marathi word for a **biodata** — literally "one's own
+account". It is the word Indian families already use for the one-page profile exchanged before a
+marriage is discussed, and it is the term taught in school as *स्ववृत्त लेखन*. A fitting name for
+a tool that turns your details into a profile you can hand over with confidence.
 
 ## Privacy — your data never leaves your device
 
