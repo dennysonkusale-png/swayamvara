@@ -10,22 +10,27 @@ a fitting name for a tool that helps you present yourself on your own terms.
 
 ## Privacy — your data never leaves your device
 
-- **No server, no database, no analytics.** The app has no `fetch`, no `XMLHttpRequest`, no
-  `sendBeacon` and no WebSocket anywhere in its code. There is no backend to store anything.
+- **No server, no database, no analytics.** The app's own code has no `fetch`, no
+  `XMLHttpRequest`, no `sendBeacon` and no WebSocket. There is no backend to store anything.
 - **Your details live in your own browser** (`localStorage`) on your own device, and nowhere
   else. Nothing is uploaded, ever.
 - **Zero external requests.** The five JavaScript libraries and every font are bundled inside
-  the file, so loading the app contacts no third party at all — not Google Fonts, not
-  Cloudflare, not jsDelivr. Verified by logging the browser's network activity while loading
-  and using the app: **0 HTTP requests.**
+  the file, so loading the app contacts no third party at all — no content delivery network, no
+  font service. Verified by logging the browser's network activity while loading and using the
+  app: **0 HTTP requests.**
 - **The shareable link carries the data in the link itself** (the URL fragment after `#`),
   which browsers never send to a web server. Even the site's host never sees it.
 - The only things that ever leave the device are the ones *you* choose to send: email (through
-  your own mail app), a WhatsApp share, or a link you copy and paste somewhere.
+  your own mail app), a share to a messaging app, or a link you copy and paste somewhere.
 
 Because the data is device-local, anyone with access to that device or browser profile could
 open the app and see it, and clearing browser data erases it — the trade-off of keeping it off
 every server.
+
+**About the bundled libraries.** The file includes five open-source JavaScript libraries, kept
+in full so that exports work offline. Their code retains the original authors' names and
+licence notices, as those licences require. They are inert — no organisation is named anywhere
+in the app's own content, sample data or interface text.
 
 ## Features
 
@@ -48,8 +53,8 @@ every server.
   is drawn in the template's own accent colour and can be swapped or removed at any time.
 - **Accent colour and typeface pickers**, plus an optional "॥ श्री गणेशाय नमः ॥" invocation banner.
 - **Exports** — PDF (multi-page A4), PNG, JPG, DOCX, and an **editable** PPTX that keeps its
-  text editable in PowerPoint.
-- **Email & share** — email the portfolio, share to WhatsApp, or create a self-contained
+  text editable in a slide editor.
+- **Email & share** — email the portfolio, share to a messaging app, or create a self-contained
   **read-only link** that anyone can view and download. Anyone opening that link can tap
   **Edit** to load the portfolio straight into the editor and carry on from there.
 - **Reset and Back buttons** — clear the form and start again, or jump from the preview back to
@@ -74,10 +79,10 @@ internet connection.
 ## Notes
 
 - All data stays in your browser (`localStorage`). Nothing is uploaded anywhere.
-- The app ships with email sending disabled. If you want one-click email through
-  [EmailJS](https://www.emailjs.com/), add your keys to the `EMAILJS` block near the top of the
-  script and set `enabled: true` — be aware that this would route mail through EmailJS's
-  servers. Out of the box, email simply opens your own mail client.
+- Email sending is disabled by default: the app saves the PDF and opens your own mail client.
+  To send directly from the app instead, define `window.sendMailViaService({to, subject,
+  message})` in the code and set `MAIL_SERVICE.enabled = true`. Doing so would route mail
+  through whichever service you choose.
 - The banner garland and floral motifs appear in the on-screen preview and in the PDF, PNG and
   JPG exports. The DOCX and PPTX files carry the text and structure, not the ornamental artwork.
 - The Guna Milan calculator uses commonly published Ashtakoot tables and is indicative only.
