@@ -11,11 +11,14 @@ a fitting name for a tool that helps you present yourself on your own terms.
 
 ## Features
 
+- **Sample preview** — tap **Sample** to see any design filled with example content before you
+  type a single detail. Your own entries are never touched, and the Template library opens
+  beside the live preview so you can compare designs at a glance.
 - **8-step guided form** — Basics, Family, Education & Career, Horoscope & Community,
   Lifestyle, Partner Preferences, Photos, Contact — with a live A4 preview beside it.
 - **Four languages** — English, हिन्दी, मराठी and संस्कृतम् — switchable instantly without
   losing data. A separate *document language* selector lets you fill the form in English and
-  export the portfolio in Marathi, and so on.
+  export the portfolio in Marathi, and so on. The sample preview follows the document language.
 - **13 templates** — Marathi Patta, Royal Rajwadi, Elegant Minimal, Floral Pastel, Modern
   Corporate, Temple Gold, Peacock Motif, Classic Ivory, and five floral designs: **Floral Vine,
   Rose Trellis, Paisley Embroidery, Marigold Festive and Lotus Pond**.
