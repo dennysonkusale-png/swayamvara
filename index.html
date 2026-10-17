@@ -199,7 +199,23 @@ fieldset{border:0;padding:0;margin:0 0 18px}
 .doc-head h2{margin:0 0 3px;font-family:var(--d-headfont,'Cormorant Garamond',serif);font-size:34px;line-height:1.08;letter-spacing:.3px}
 .doc-head .sub{font-size:14px;opacity:.92;margin:2px 0}
 .doc-head .meta{font-size:12.5px;opacity:.85;margin-top:6px;line-height:1.5}
-.doc-body{padding:24px 44px 40px}
+.doc-body{padding:24px 44px 40px;position:relative}
+/* ---- floral / embroidery motif layer ---- */
+.doc-deco{position:absolute;inset:0;pointer-events:none;z-index:0;color:var(--d-accent,#7a1f2b)}
+.doc-deco .c{position:absolute;width:54px;height:54px;opacity:.5}
+.doc-deco .c.tl{top:2px;left:2px}
+.doc-deco .c.tr{top:2px;right:2px;transform:scaleX(-1)}
+.doc-deco .c.bl{bottom:2px;left:2px;transform:scaleY(-1)}
+.doc-deco .c.br{bottom:2px;right:2px;transform:scale(-1,-1)}
+.doc-body > .sec{position:relative;z-index:1}
+.sec-deco{display:inline-flex;align-items:center;margin-left:2px;color:var(--d-accent,#7a1f2b);opacity:.9}
+.sec-deco svg{display:block}
+#doc[data-motif]:not([data-motif="none"]) .sec-title::after{display:none}
+.motif-row{display:flex;gap:8px;flex-wrap:wrap}
+.motif-btn{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 9px;border:1.5px solid var(--line);border-radius:10px;background:#fff;min-width:92px;color:var(--maroon);cursor:pointer}
+.motif-btn svg{display:block}
+.motif-btn span{font-size:10.5px;font-weight:600;text-align:center;line-height:1.2}
+.motif-btn.on{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,154,60,.2)}
 .sec{margin-bottom:20px}
 .sec-title{
   font-family:var(--d-headfont,'Cormorant Garamond',serif);
@@ -235,6 +251,11 @@ fieldset{border:0;padding:0;margin:0 0 18px}
 #doc[data-tpl="temple"] .doc-head{border-bottom:5px double #e6cf94}
 #doc[data-tpl="peacock"]{--d-bg:#f5fbfb;--d-ink:#12363a;--d-accent:#0f6b63;--d-muted:#4d7a7a;--d-rule:#bfe0dd;--d-head-bg:linear-gradient(135deg,#0b4f6c,#12807a 55%,#1b8a5a);--d-head-ink:#eafaf7;--d-headfont:'Marcellus',serif}
 #doc[data-tpl="ivory"]{--d-bg:#fbf6ec;--d-ink:#33302a;--d-accent:#6b5b3e;--d-muted:#8a7c63;--d-rule:#ddd2b8;--d-head-bg:linear-gradient(135deg,#e9dcc0,#d8c49a);--d-head-ink:#3a3225;--d-head-ring:#b8a678;--d-headfont:'Cormorant Garamond',serif}
+#doc[data-tpl="vine"]{--d-bg:#fbfdf7;--d-ink:#2f3a26;--d-accent:#6b8f4e;--d-muted:#7a8a68;--d-rule:#d8e4c8;--d-head-bg:linear-gradient(135deg,#5f8145,#a8c686);--d-head-ink:#fbfdf7;--d-headfont:'Cormorant Garamond',serif}
+#doc[data-tpl="rose"]{--d-bg:#fffafb;--d-ink:#4a2430;--d-accent:#c2547f;--d-muted:#9a7183;--d-rule:#f2d3de;--d-head-bg:linear-gradient(135deg,#b8446e,#e8a0b8);--d-head-ink:#fff7fa;--d-headfont:'Cormorant Garamond',serif}
+#doc[data-tpl="paisley"]{--d-bg:#fbf9f4;--d-ink:#2a2440;--d-accent:#3f4e8c;--d-muted:#6f7590;--d-rule:#d9d6e6;--d-head-bg:linear-gradient(135deg,#33406f,#7a6fae);--d-head-ink:#f6f4ff;--d-headfont:'Marcellus',serif}
+#doc[data-tpl="marigold"]{--d-bg:#fff9ef;--d-ink:#43280c;--d-accent:#d97a1a;--d-muted:#8f6a3a;--d-rule:#f0d9b0;--d-head-bg:linear-gradient(135deg,#c9421a,#e8912a);--d-head-ink:#fff8ec;--d-headfont:'Noto Serif Devanagari',serif}
+#doc[data-tpl="lotus"]{--d-bg:#f8fbfb;--d-ink:#233b3b;--d-accent:#c05a86;--d-muted:#5f7d7d;--d-rule:#cfe2e0;--d-head-bg:linear-gradient(135deg,#1f6b63,#5aa79b);--d-head-ink:#f0fbf9;--d-headfont:'Cormorant Garamond',serif}
 
 /* ---------- Modals ---------- */
 .modal{position:fixed;inset:0;z-index:60;display:none;place-items:center;background:rgba(40,20,10,.45);padding:18px}
@@ -422,6 +443,10 @@ body.readonly .preview-pane{position:static;max-height:none}
         <div class="grp">
           <b id="accentLbl">Accent</b>
           <div class="swatches" id="accentSwatches"></div>
+        </div>
+        <div class="grp">
+          <b id="motifLbl">Floral motif</b>
+          <div class="motif-row" id="motifRow"></div>
         </div>
         <div class="grp">
           <b id="fontLbl">Typeface</b>
@@ -843,16 +868,69 @@ function tL(lang, key){
    2. Templates
    ============================================================ */
 const TEMPLATES = [
-  {id:"patta",     icon:"🪔", bg:"linear-gradient(135deg,#b3441e,#d98a2b)"},
-  {id:"rajwadi",   icon:"👑", bg:"linear-gradient(135deg,#5c1620,#b8860b)"},
-  {id:"minimal",   icon:"◻️", bg:"linear-gradient(135deg,#ffffff,#eeeeee)"},
-  {id:"floral",    icon:"🌸", bg:"linear-gradient(135deg,#e58bb0,#a8d5ba)"},
-  {id:"corporate", icon:"💼", bg:"linear-gradient(135deg,#0b3d4d,#0f6b63)"},
-  {id:"temple",    icon:"🛕", bg:"linear-gradient(135deg,#8a6110,#c99a3c)"},
-  {id:"peacock",   icon:"🦚", bg:"linear-gradient(135deg,#0b4f6c,#1b8a5a)"},
-  {id:"ivory",     icon:"📜", bg:"linear-gradient(135deg,#e9dcc0,#d8c49a)"},
+  {id:"patta",     icon:"🪔", motif:"vine",     bg:"linear-gradient(135deg,#b3441e,#d98a2b)"},
+  {id:"rajwadi",   icon:"👑", motif:"mandala",  bg:"linear-gradient(135deg,#5c1620,#b8860b)"},
+  {id:"minimal",   icon:"◻️", motif:"none",     bg:"linear-gradient(135deg,#ffffff,#eeeeee)"},
+  {id:"floral",    icon:"🌸", motif:"rose",     bg:"linear-gradient(135deg,#e58bb0,#a8d5ba)"},
+  {id:"corporate", icon:"💼", motif:"none",     bg:"linear-gradient(135deg,#0b3d4d,#0f6b63)"},
+  {id:"temple",    icon:"🛕", motif:"lotus",    bg:"linear-gradient(135deg,#8a6110,#c99a3c)"},
+  {id:"peacock",   icon:"🦚", motif:"paisley",  bg:"linear-gradient(135deg,#0b4f6c,#1b8a5a)"},
+  {id:"ivory",     icon:"📜", motif:"vine",     bg:"linear-gradient(135deg,#e9dcc0,#d8c49a)"},
+  {id:"vine",      icon:"🌿", motif:"vine",     bg:"linear-gradient(135deg,#5f8145,#a8c686)"},
+  {id:"rose",      icon:"🌹", motif:"rose",     bg:"linear-gradient(135deg,#b8446e,#e8a0b8)"},
+  {id:"paisley",   icon:"🪡", motif:"paisley",  bg:"linear-gradient(135deg,#33406f,#7a6fae)"},
+  {id:"marigold",  icon:"🌼", motif:"marigold", bg:"linear-gradient(135deg,#c9421a,#e8912a)"},
+  {id:"lotus",     icon:"🪷", motif:"lotus",    bg:"linear-gradient(135deg,#1f6b63,#5aa79b)"},
 ];
 const ACCENTS = ["","#b3441e","#8a1c2b","#c2547f","#0f6b63","#a97b12","#1b5e8a","#5a3ea8","#2e7d32","#333333"];
+
+/* ============================================================
+   2b. Floral / embroidery motifs
+   Each motif draws in currentColor, so it takes the template's
+   accent colour automatically. Users can swap motifs freely.
+   ============================================================ */
+const MOTIF_IDS = ["none","vine","rose","paisley","lotus","mandala","marigold"];
+const MOTIFS = {
+  none: null,
+  vine:{
+    divider:{vb:"0 0 160 14", body:`<path d="M2 7h34"/><path d="M44 7c8-7 18-7 24 0-6 7-16 7-24 0z" fill="currentColor" stroke="none" opacity=".85"/><circle cx="80" cy="7" r="3" fill="currentColor" stroke="none"/><path d="M92 7c8-7 18-7 24 0-6 7-16 7-24 0z" fill="currentColor" stroke="none" opacity=".85"/><path d="M124 7h34"/>`},
+    corner:{vb:"0 0 64 64", body:`<path d="M4 60V26C4 13 13 4 26 4h34"/><path d="M4 60c0-18 14-32 32-32" opacity=".45"/><path d="M12 40c8-12 20-14 30-6-10 10-22 12-30 6z" fill="currentColor" stroke="none" opacity=".8"/><circle cx="14" cy="14" r="3" fill="currentColor" stroke="none"/><circle cx="30" cy="8" r="2" fill="currentColor" stroke="none"/>`}
+  },
+  rose:{
+    divider:{vb:"0 0 160 18", body:`<path d="M2 9h28M130 9h28"/><circle cx="58" cy="9" r="6"/><circle cx="58" cy="9" r="2.6" fill="currentColor" stroke="none"/><circle cx="80" cy="9" r="7.5"/><circle cx="80" cy="9" r="3.2" fill="currentColor" stroke="none"/><circle cx="102" cy="9" r="6"/><circle cx="102" cy="9" r="2.6" fill="currentColor" stroke="none"/><path d="M48 9c-5-4-10-3-13 3M112 9c5-4 10-3 13 3"/>`},
+    corner:{vb:"0 0 64 64", body:`<path d="M4 60V26C4 13 13 4 26 4h34"/><circle cx="20" cy="20" r="7"/><circle cx="20" cy="20" r="3" fill="currentColor" stroke="none"/><path d="M12 40c6-9 16-11 24-5-8 8-17 9-24 5z" fill="currentColor" stroke="none" opacity=".75"/><circle cx="42" cy="10" r="2" fill="currentColor" stroke="none"/>`}
+  },
+  paisley:{
+    divider:{vb:"0 0 160 20", body:`<path d="M2 10h26M132 10h26"/><path d="M58 17c-7-3-10-10-7-15 3-5 12-5 15 0 2 4-1 9-6 10-3 1-5-1-5-3 0-2 2-3 4-2"/><path d="M102 3c7 3 10 10 7 15-3 5-12 5-15 0-2-4 1-9 6-10 3-1 5 1 5 3 0 2-2 3-4 2"/><circle cx="80" cy="10" r="2.4" fill="currentColor" stroke="none"/><circle cx="70" cy="10" r="1.3" fill="currentColor" stroke="none"/><circle cx="90" cy="10" r="1.3" fill="currentColor" stroke="none"/>`},
+    corner:{vb:"0 0 64 64", body:`<path d="M4 60V26C4 13 13 4 26 4h34"/><path d="M22 34c-8-3-11-11-8-17 4-6 14-5 17 1 2 5-2 11-8 12-3 1-6-1-5-4 1-2 3-3 5-2"/><circle cx="36" cy="12" r="2.2" fill="currentColor" stroke="none"/><circle cx="14" cy="14" r="2" fill="currentColor" stroke="none"/>`}
+  },
+  lotus:{
+    divider:{vb:"0 0 160 20", body:`<path d="M2 12h40M118 12h40"/><path d="M80 3c-5 6-5 12 0 16 5-4 5-10 0-16z" fill="currentColor" stroke="none" opacity=".85"/><path d="M80 19c-7 0-12-4-14-9 7-1 12 2 14 9z" fill="currentColor" stroke="none" opacity=".6"/><path d="M80 19c7 0 12-4 14-9-7-1-12 2-14 9z" fill="currentColor" stroke="none" opacity=".6"/><path d="M64 19c-4-3-6-7-5-11M96 19c4-3 6-7 5-11"/>`},
+    corner:{vb:"0 0 64 64", body:`<path d="M4 60V26C4 13 13 4 26 4h34"/><path d="M26 30c-6 4-12 3-15-2 4-4 10-4 15 2z" fill="currentColor" stroke="none" opacity=".8"/><path d="M14 40c8-1 14 3 16 10-8 1-14-3-16-10z" fill="currentColor" stroke="none" opacity=".55"/><circle cx="42" cy="10" r="2" fill="currentColor" stroke="none"/>`}
+  },
+  mandala:{
+    divider:{vb:"0 0 160 20", body:`<path d="M2 10h44M114 10h44"/><circle cx="80" cy="10" r="8"/><circle cx="80" cy="10" r="4.5"/><circle cx="80" cy="10" r="1.8" fill="currentColor" stroke="none"/><path d="M80 2v16M72 10h16M74.3 4.3l11.4 11.4M85.7 4.3L74.3 15.7" opacity=".55"/>`},
+    corner:{vb:"0 0 64 64", body:`<path d="M4 60V26C4 13 13 4 26 4h34"/><circle cx="22" cy="22" r="10"/><circle cx="22" cy="22" r="5"/><circle cx="22" cy="22" r="2" fill="currentColor" stroke="none"/><path d="M22 8v4M22 32v4M8 22h4M32 22h4" opacity=".6"/><circle cx="44" cy="10" r="2" fill="currentColor" stroke="none"/>`}
+  },
+  marigold:{
+    divider:{vb:"0 0 160 18", body:`<path d="M2 6c26 10 52 10 78 0s52-10 78 0" opacity=".6"/><circle cx="30" cy="9" r="4.2" fill="currentColor" stroke="none" opacity=".85"/><circle cx="62" cy="12" r="5" fill="currentColor" stroke="none" opacity=".85"/><circle cx="98" cy="12" r="5" fill="currentColor" stroke="none" opacity=".85"/><circle cx="130" cy="9" r="4.2" fill="currentColor" stroke="none" opacity=".85"/><circle cx="46" cy="10.5" r="3" fill="currentColor" stroke="none" opacity=".55"/><circle cx="114" cy="10.5" r="3" fill="currentColor" stroke="none" opacity=".55"/>`},
+    corner:{vb:"0 0 64 64", body:`<path d="M4 60V26C4 13 13 4 26 4h34" opacity=".7"/><circle cx="18" cy="18" r="6" fill="currentColor" stroke="none" opacity=".85"/><circle cx="34" cy="10" r="4.5" fill="currentColor" stroke="none" opacity=".7"/><circle cx="10" cy="34" r="4.5" fill="currentColor" stroke="none" opacity=".7"/><circle cx="26" cy="26" r="3" fill="currentColor" stroke="none" opacity=".5"/>`}
+  }
+};
+function svgPart(p,w,h){
+  if(!p) return "";
+  return `<svg viewBox="${p.vb}" width="${w}" height="${h}" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">${p.body}</svg>`;
+}
+function motifDivider(){
+  const m=MOTIFS[state.motif];
+  return (m&&m.divider) ? `<span class="sec-deco">${svgPart(m.divider,160,16)}</span>` : "";
+}
+function motifDeco(){
+  const m=MOTIFS[state.motif];
+  if(!m||!m.corner) return "";
+  const c=svgPart(m.corner,54,54);
+  return `<div class="doc-deco" aria-hidden="true"><span class="c tl">${c}</span><span class="c tr">${c}</span><span class="c bl">${c}</span><span class="c br">${c}</span></div>`;
+}
 
 /* ============================================================
    3. Field schema
@@ -971,7 +1049,7 @@ const STEPS = [
    ============================================================ */
 const LS_KEY = "swayamvara.v1";
 const DEFAULT_STATE = {
-  lang:"en", docLang:"en", template:"patta", accent:"", font:"serif", invocation:true,
+  lang:"en", docLang:"en", template:"patta", motif:"vine", accent:"", font:"serif", invocation:true,
   data:{}, photos:[], step:0,
   showIncome:true, showContact:true, showHoroscope:true,
 };
@@ -1188,6 +1266,7 @@ function renderDoc(){
   const lang=currentLang();
   const doc=$("#doc");
   doc.dataset.tpl=state.template;
+  doc.dataset.motif=state.motif||"none";
   if(state.accent) doc.style.setProperty("--d-accent",state.accent); else doc.style.removeProperty("--d-accent");
   const fontMap={serif:"'Cormorant Garamond',serif",devanagari:"'Noto Serif Devanagari',serif",sans:"'Inter','Mukta',sans-serif"};
   doc.style.setProperty("--d-headfont",fontMap[state.font]||fontMap.serif);
@@ -1217,17 +1296,17 @@ function renderDoc(){
       ${metaBits.length?`<div class="meta">${metaBits.join("<br>")}</div>`:""}
     </div>
   </div>`;
-  html+=`<div class="doc-body">`;
+  html+=`<div class="doc-body">`+motifDeco();
   groups.forEach(g=>{
     if(g.legend===tL(lang,"secPhotos")) return;
-    html+=`<div class="sec"><div class="sec-title">${esc(g.legend)}</div><div class="grid-d">`;
+    html+=`<div class="sec"><div class="sec-title">${esc(g.legend)}${motifDivider()}</div><div class="grid-d">`;
     g.items.forEach(it=>{
       html+=`<div class="item${it.full?" full":""}"><span class="k">${esc(it.k)}</span><span class="v">${esc(it.v).replace(/\n/g,"<br>")}</span></div>`;
     });
     html+=`</div></div>`;
   });
   if(state.photos.length>1){
-    html+=`<div class="sec"><div class="sec-title">${esc(tL(lang,"secPhotos"))}</div><div class="doc-photos">`;
+    html+=`<div class="sec"><div class="sec-title">${esc(tL(lang,"secPhotos"))}${motifDivider()}</div><div class="doc-photos">`;
     state.photos.slice(1,7).forEach(p=>{ html+=`<img src="${p}" alt="">`; });
     html+=`</div></div>`;
   }
@@ -1432,7 +1511,7 @@ function renderTemplates(){
     const c=document.createElement("button");
     c.className="tpl-card"+(state.template===tp.id?" on":"");
     c.innerHTML=`<div class="swatch" style="background:${tp.bg}">${tp.icon}</div><div class="nm">${esc(tL(L,"tpl_"+tp.id))}<small>${tp.id}</small></div>`;
-    c.onclick=()=>{ state.template=tp.id; saveState(); renderTemplates(); renderDoc(); };
+    c.onclick=()=>{ state.template=tp.id; state.motif=tp.motif||"none"; saveState(); renderTemplates(); renderDoc(); };
     grid.appendChild(c);
   });
   // accents
@@ -1451,6 +1530,18 @@ function renderTemplates(){
   $("#accentLbl").textContent=tL(L,"accent");
   $("#fontLbl").textContent=tL(L,"typeface");
   $("#invLbl").textContent=tL(L,"invocation");
+  $("#motifLbl").textContent=tL(L,"motif");
+  // floral / embroidery motif picker
+  const mrow=$("#motifRow"); mrow.innerHTML="";
+  MOTIF_IDS.forEach(id=>{
+    const b=document.createElement("button");
+    b.className="motif-btn"+(state.motif===id?" on":"");
+    const m=MOTIFS[id];
+    const prev=m?svgPart(m.divider,110,16):'<svg width="110" height="16" viewBox="0 0 110 16"><line x1="12" y1="8" x2="98" y2="8" stroke="#c9c0ae" stroke-width="1.5" stroke-dasharray="4 4"/></svg>';
+    b.innerHTML=prev+`<span>${esc(tL(L,"motif_"+id))}</span>`;
+    b.onclick=()=>{ state.motif=id; saveState(); renderTemplates(); renderDoc(); };
+    mrow.appendChild(b);
+  });
 }
 
 /* ============================================================
@@ -1572,7 +1663,11 @@ Object.assign(I18N.en, {
   roEdit:"Edit this portfolio", roEditShort:"Edit",
   editSharedConfirm:"Editing this shared portfolio will replace the portfolio saved on this device. Continue?",
   editSharedToast:"Editing now — your changes are saved on this device",
-  backToEdit:"Back to edit", resetShort:"Reset"
+  backToEdit:"Back to edit", resetShort:"Reset",
+  motif:"Floral motif", motif_none:"None", motif_vine:"Floral vine", motif_rose:"Rose trellis",
+  motif_paisley:"Paisley embroidery", motif_lotus:"Lotus", motif_mandala:"Mandala", motif_marigold:"Marigold garland",
+  tpl_vine:"Floral Vine", tpl_rose:"Rose Trellis", tpl_paisley:"Paisley Embroidery",
+  tpl_marigold:"Marigold Festive", tpl_lotus:"Lotus Pond"
 });
 Object.assign(I18N.hi, {
   more:"अधिक", moreTitle:"अतिरिक्त सुविधाएँ",
@@ -1592,7 +1687,11 @@ Object.assign(I18N.hi, {
   roEdit:"यह परिचय संपादित करें", roEditShort:"संपादन",
   editSharedConfirm:"इस साझा परिचय को संपादित करने से इस डिवाइस पर सहेजा गया परिचय बदल जाएगा। जारी रखें?",
   editSharedToast:"संपादन शुरू — बदलाव इस डिवाइस पर सहेजे जाएँगे",
-  backToEdit:"संपादन पर वापस", resetShort:"रीसेट"
+  backToEdit:"संपादन पर वापस", resetShort:"रीसेट",
+  motif:"पुष्प अलंकरण", motif_none:"कोई नहीं", motif_vine:"पुष्प लता", motif_rose:"गुलाब जाली",
+  motif_paisley:"कशीदाकारी", motif_lotus:"कमल", motif_mandala:"मंडल", motif_marigold:"गेंदा माला",
+  tpl_vine:"पुष्प लता", tpl_rose:"गुलाब जाली", tpl_paisley:"कशीदाकारी",
+  tpl_marigold:"गेंदा उत्सव", tpl_lotus:"कमल सरोवर"
 });
 Object.assign(I18N.mr, {
   more:"अधिक", moreTitle:"अतिरिक्त सुविधा",
@@ -1612,7 +1711,11 @@ Object.assign(I18N.mr, {
   roEdit:"हा परिचय संपादित करा", roEditShort:"संपादन",
   editSharedConfirm:"हा शेअर केलेला परिचय संपादित केल्यास या डिव्हाइसवर जतन केलेला परिचय बदलेल. सुरू ठेवायचे?",
   editSharedToast:"संपादन सुरू — बदल या डिव्हाइसवर जतन होतील",
-  backToEdit:"संपादनाकडे परत", resetShort:"रीसेट"
+  backToEdit:"संपादनाकडे परत", resetShort:"रीसेट",
+  motif:"पुष्प अलंकार", motif_none:"काही नाही", motif_vine:"पुष्पवेल", motif_rose:"गुलाब जाळी",
+  motif_paisley:"भरतकाम", motif_lotus:"कमळ", motif_mandala:"मंडळ", motif_marigold:"झेंडू माळ",
+  tpl_vine:"पुष्पवेल", tpl_rose:"गुलाब जाळी", tpl_paisley:"भरतकाम",
+  tpl_marigold:"झेंडू उत्सव", tpl_lotus:"कमळ तळे"
 });
 Object.assign(I18N.sa, {
   more:"अधिकम्", moreTitle:"अतिरिक्तसुविधाः",
@@ -1632,7 +1735,11 @@ Object.assign(I18N.sa, {
   roEdit:"इमं परिचयं संपादयतु", roEditShort:"संपादनम्",
   editSharedConfirm:"अस्य सहभागिपरिचयस्य संपादनेन अस्मिन् यन्त्रे रक्षितः परिचयः परिवर्तिष्यते। अग्रे गच्छतु?",
   editSharedToast:"संपादनम् आरब्धम् — परिवर्तनानि अस्मिन् यन्त्रे रक्ष्यन्ते",
-  backToEdit:"संपादनं प्रति पुनः", resetShort:"पुनःस्थापनम्"
+  backToEdit:"संपादनं प्रति पुनः", resetShort:"पुनःस्थापनम्",
+  motif:"पुष्पालंकरणम्", motif_none:"न किमपि", motif_vine:"पुष्पलता", motif_rose:"गुलाबजालम्",
+  motif_paisley:"कौशेयकर्म", motif_lotus:"कमलम्", motif_mandala:"मण्डलम्", motif_marigold:"स्थलकमलमाला",
+  tpl_vine:"पुष्पलता", tpl_rose:"गुलाबजालम्", tpl_paisley:"कौशेयकर्म",
+  tpl_marigold:"स्थलकमलोत्सवः", tpl_lotus:"कमलसरः"
 });
 
 /* ---- nakshatra + Ashtakoot tables ---- */
@@ -1738,7 +1845,7 @@ function renderGunaResult(r){
 
 /* ---- save / load JSON ---- */
 function saveJsonFile(){
-  const payload={v:1,app:"swayamvara",state:{data:state.data,photos:state.photos,lang:state.lang,docLang:state.docLang,template:state.template,accent:state.accent,font:state.font,invocation:state.invocation,showIncome:state.showIncome,showContact:state.showContact,showHoroscope:state.showHoroscope}};
+  const payload={v:1,app:"swayamvara",state:{data:state.data,photos:state.photos,lang:state.lang,docLang:state.docLang,template:state.template,motif:state.motif,accent:state.accent,font:state.font,invocation:state.invocation,showIncome:state.showIncome,showContact:state.showContact,showHoroscope:state.showHoroscope}};
   saveBlob(new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}), safeName()+"_Swayamvara_data.json");
   toast(tL(state.lang,"toastDownloaded"));
 }
@@ -1749,7 +1856,7 @@ function loadJsonFile(file){
       const p=JSON.parse(r.result); const s=p.state||p;
       state.data=s.data||{}; state.photos=s.photos||[];
       state.lang=s.lang||state.lang; state.docLang=s.docLang||state.lang;
-      state.template=s.template||state.template; state.accent=s.accent||""; state.font=s.font||"serif";
+      state.template=s.template||state.template; state.accent=s.accent||""; state.font=s.font||"serif"; state.motif=s.motif||state.motif;
       state.invocation=s.invocation!==false;
       state.showIncome=s.showIncome!==false; state.showContact=s.showContact!==false; state.showHoroscope=s.showHoroscope!==false;
       state.step=0; saveState();
@@ -1764,7 +1871,7 @@ function loadJsonFile(file){
 
 /* ---- shareable read-only link ---- */
 function buildShareLink(){
-  const payload={d:state.data,s:{i:state.showIncome,c:state.showContact,h:state.showHoroscope},t:state.template,a:state.accent,f:state.font,v:state.invocation?1:0,l:state.docLang,n:state.data.name||""};
+  const payload={d:state.data,s:{i:state.showIncome,c:state.showContact,h:state.showHoroscope},t:state.template,a:state.accent,f:state.font,v:state.invocation?1:0,l:state.docLang,n:state.data.name||"",m:state.motif};
   if(document.getElementById("sharePhotos").checked) payload.ph=state.photos;
   const json=JSON.stringify(payload);
   const base=location.href.split("#")[0];
@@ -1815,7 +1922,7 @@ function tryLoadFromHash(){
   readOnly=true;
   state.data=p.d||{}; state.photos=p.ph||[];
   state.showIncome=!!(p.s&&p.s.i); state.showContact=!!(p.s&&p.s.c); state.showHoroscope=!!(p.s&&p.s.h);
-  state.template=p.t||"patta"; state.accent=p.a||""; state.font=p.f||"serif";
+  state.template=p.t||"patta"; state.accent=p.a||""; state.font=p.f||"serif"; state.motif=p.m||"vine";
   state.invocation=!!p.v; state.docLang=p.l||"en"; state.lang=state.docLang;
   document.body.classList.remove("view-edit","view-preview");
   document.body.classList.add("readonly");
@@ -1828,7 +1935,7 @@ function tryLoadFromHash(){
 function resetAll(){
   const L=state.lang;
   if(!confirm(tL(L,"resetConfirm"))) return;
-  const keep={lang:state.lang, docLang:state.docLang, template:state.template, accent:state.accent, font:state.font, invocation:state.invocation};
+  const keep={lang:state.lang, docLang:state.docLang, template:state.template, motif:state.motif, accent:state.accent, font:state.font, invocation:state.invocation};
   try{ localStorage.removeItem(LS_KEY); }catch(e){}
   state=structuredClone(DEFAULT_STATE);
   Object.assign(state, keep);
