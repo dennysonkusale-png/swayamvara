@@ -16,15 +16,22 @@ a fitting name for a tool that helps you present yourself on your own terms.
 - **Four languages** — English, हिन्दी, मराठी and संस्कृतम् — switchable instantly without
   losing data. A separate *document language* selector lets you fill the form in English and
   export the portfolio in Marathi, and so on.
-- **Template library** — 8 designs (Marathi Patta, Royal Rajwadi, Elegant Minimal, Floral
-  Pastel, Modern Corporate, Temple Gold, Peacock Motif, Classic Ivory), plus accent-colour and
-  typeface pickers and an optional "॥ श्री गणेशाय नमः ॥" invocation banner.
+- **13 templates** — Marathi Patta, Royal Rajwadi, Elegant Minimal, Floral Pastel, Modern
+  Corporate, Temple Gold, Peacock Motif, Classic Ivory, and five floral designs: **Floral Vine,
+  Rose Trellis, Paisley Embroidery, Marigold Festive and Lotus Pond**.
+- **Floral & embroidery motifs** — layer a hand-drawn decorative motif onto *any* template:
+  floral vine, rose trellis, paisley embroidery, lotus, mandala or marigold garland. Each motif
+  is drawn in the template's own accent colour and can be swapped or removed at any time, so
+  the look stays fully editable.
+- **Accent colour and typeface pickers**, plus an optional "॥ श्री गणेशाय नमः ॥" invocation banner.
 - **Exports** — PDF (multi-page A4), PNG, JPG, DOCX, and an **editable** PPTX that keeps its
   text editable in PowerPoint.
 - **Email & share** — email the portfolio, share to WhatsApp, or create a self-contained
   **read-only link** that anyone can view and download. Anyone opening that link can tap
   **Edit** to load the portfolio straight into the editor and carry on from there, on their
   own device.
+- **Reset and Back buttons** — clear the form and start again, or jump from the preview back to
+  the editor, without losing your chosen language or design.
 - **India-specific biodata fields** — gotra, rashi, nakshatra, gana, nadi, manglik status,
   mool gaon, family values, diet, and more.
 - **Privacy toggles** — hide income, contact details or horoscope from the shared copy.
@@ -47,6 +54,8 @@ they need an internet connection. Everything else works offline.
 - For one-click email sending, add your [EmailJS](https://www.emailjs.com/) keys to the
   `EMAILJS` block near the top of the script. Without keys, the app saves the PDF and opens
   your mail client instead.
+- Floral motifs appear in the on-screen preview and in the PDF, PNG and JPG exports. The DOCX
+  and PPTX files carry the text and structure, not the ornamental artwork.
 - The Guna Milan calculator uses commonly published Ashtakoot tables and is indicative only.
   Please confirm with a qualified astrologer before making any decision.
 
