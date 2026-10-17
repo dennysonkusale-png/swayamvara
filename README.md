@@ -36,9 +36,13 @@ in the app's own content, sample data or interface text.
 
 ## Features
 
-- **Wedding banner garland** — a mango-leaf *toran* (तोरण) with a floral pendant and corner
-  sprays across the top of every design, drawn in the template's own colours. Switch it off
-  from the Template library if you prefer a plain banner.
+- **Banner decoration — your choice of eight.** Pick the ornament that runs around the top
+  coloured banner of the portfolio: **floral lines** (the default), toran garland, leaf vine,
+  lace edge, paisley, marigold, pearls, or none at all. Every one is drawn in the template's own
+  header ink, so it always matches, and each has a live preview in the picker.
+- **Optional floral page border.** Switch on a floral line frame — a double rule with rosettes
+  at the corners and leaf sprigs at the top and bottom edges — drawn in the template's accent
+  colour around the whole page. Off by default.
 - **Sample preview** — tap **Sample** to see any design filled with example content before you
   type a single detail. Your own entries are never touched, and the Template library opens
   beside the live preview so you can compare designs at a glance.
@@ -50,9 +54,9 @@ in the app's own content, sample data or interface text.
 - **13 templates** — Marathi Patta, Royal Rajwadi, Elegant Minimal, Floral Pastel, Modern
   Corporate, Temple Gold, Peacock Motif, Classic Ivory, and five floral designs: **Floral Vine,
   Rose Trellis, Paisley Embroidery, Marigold Festive and Lotus Pond**.
-- **Floral & embroidery motifs** — layer a hand-drawn decorative motif onto *any* template:
-  floral vine, rose trellis, paisley embroidery, lotus, mandala or marigold garland. Each motif
-  is drawn in the template's own accent colour and can be swapped or removed at any time.
+- **Floral & embroidery motifs** — a second, independent layer: a hand-drawn motif inside the
+  page itself. Floral vine, rose trellis, paisley embroidery, lotus, mandala or marigold
+  garland, each drawn in the template's accent colour and swappable at any time.
 - **Accent colour and typeface pickers**, plus an optional "॥ श्री गणेशाय नमः ॥" invocation banner.
 - **Exports** — PDF (multi-page A4), PNG, JPG, DOCX, and an **editable** PPTX that keeps its
   text editable in a slide editor.
@@ -85,8 +89,9 @@ internet connection.
   To send directly from the app instead, define `window.sendMailViaService({to, subject,
   message})` in the code and set `MAIL_SERVICE.enabled = true`. Doing so would route mail
   through whichever service you choose.
-- The banner garland and floral motifs appear in the on-screen preview and in the PDF, PNG and
-  JPG exports. The DOCX and PPTX files carry the text and structure, not the ornamental artwork.
+- The banner decoration, floral page border and floral motifs all appear in the on-screen
+  preview and in the PDF, PNG and JPG exports. The DOCX and PPTX files carry the text and
+  structure, not the ornamental artwork.
 - The Guna Milan calculator uses commonly published Ashtakoot tables and is indicative only.
   Please confirm with a qualified astrologer before making any decision.
 
