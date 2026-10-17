@@ -1,13 +1,31 @@
 # स्वयंवर · Swayamvara
 
-A free, single-file **marriage portfolio (biodata) builder** for Indian users. Open it in a
-browser and create, customise, download and email a polished matrimonial profile — no server,
-no sign-up, no build step.
+A free, **fully self-contained** marriage portfolio (biodata) builder for Indian users. One
+HTML file, no server, no sign-up, no build step — and **nothing you type ever leaves your device.**
 
 ![Swayamvara — the editor on the left, the live A4 portfolio preview on the right](screenshot.png)
 
 *Swayamvara* (स्वयंवर) was the ancient Vedic ceremony in which a bride chose her own groom —
 a fitting name for a tool that helps you present yourself on your own terms.
+
+## Privacy — your data never leaves your device
+
+- **No server, no database, no analytics.** The app has no `fetch`, no `XMLHttpRequest`, no
+  `sendBeacon` and no WebSocket anywhere in its code. There is no backend to store anything.
+- **Your details live in your own browser** (`localStorage`) on your own device, and nowhere
+  else. Nothing is uploaded, ever.
+- **Zero external requests.** The five JavaScript libraries and every font are bundled inside
+  the file, so loading the app contacts no third party at all — not Google Fonts, not
+  Cloudflare, not jsDelivr. Verified by logging the browser's network activity while loading
+  and using the app: **0 HTTP requests.**
+- **The shareable link carries the data in the link itself** (the URL fragment after `#`),
+  which browsers never send to a web server. Even the site's host never sees it.
+- The only things that ever leave the device are the ones *you* choose to send: email (through
+  your own mail app), a WhatsApp share, or a link you copy and paste somewhere.
+
+Because the data is device-local, anyone with access to that device or browser profile could
+open the app and see it, and clearing browser data erases it — the trade-off of keeping it off
+every server.
 
 ## Features
 
@@ -27,15 +45,13 @@ a fitting name for a tool that helps you present yourself on your own terms.
   Rose Trellis, Paisley Embroidery, Marigold Festive and Lotus Pond**.
 - **Floral & embroidery motifs** — layer a hand-drawn decorative motif onto *any* template:
   floral vine, rose trellis, paisley embroidery, lotus, mandala or marigold garland. Each motif
-  is drawn in the template's own accent colour and can be swapped or removed at any time, so
-  the look stays fully editable.
+  is drawn in the template's own accent colour and can be swapped or removed at any time.
 - **Accent colour and typeface pickers**, plus an optional "॥ श्री गणेशाय नमः ॥" invocation banner.
 - **Exports** — PDF (multi-page A4), PNG, JPG, DOCX, and an **editable** PPTX that keeps its
   text editable in PowerPoint.
 - **Email & share** — email the portfolio, share to WhatsApp, or create a self-contained
   **read-only link** that anyone can view and download. Anyone opening that link can tap
-  **Edit** to load the portfolio straight into the editor and carry on from there, on their
-  own device.
+  **Edit** to load the portfolio straight into the editor and carry on from there.
 - **Reset and Back buttons** — clear the form and start again, or jump from the preview back to
   the editor, without losing your chosen language or design.
 - **India-specific biodata fields** — gotra, rashi, nakshatra, gana, nadi, manglik status,
@@ -47,19 +63,21 @@ a fitting name for a tool that helps you present yourself on your own terms.
 
 ## How to run
 
-Download `index.html` and open it in any browser. That's it.
+Download `index.html` and open it in any browser — online or completely offline. That's it.
 
 Or use the hosted version: **https://dennysonkusale-png.github.io/swayamvara/**
 
-The export features (PDF/DOCX/PPTX/image) fetch a few libraries from a CDN the first time, so
-they need an internet connection. Everything else works offline.
+Because everything is bundled, the file is about 2.1 MB. That is the price of making zero
+external requests; nothing else needs to be downloaded afterwards, and exports work with no
+internet connection.
 
 ## Notes
 
 - All data stays in your browser (`localStorage`). Nothing is uploaded anywhere.
-- For one-click email sending, add your [EmailJS](https://www.emailjs.com/) keys to the
-  `EMAILJS` block near the top of the script. Without keys, the app saves the PDF and opens
-  your mail client instead.
+- The app ships with email sending disabled. If you want one-click email through
+  [EmailJS](https://www.emailjs.com/), add your keys to the `EMAILJS` block near the top of the
+  script and set `enabled: true` — be aware that this would route mail through EmailJS's
+  servers. Out of the box, email simply opens your own mail client.
 - The banner garland and floral motifs appear in the on-screen preview and in the PDF, PNG and
   JPG exports. The DOCX and PPTX files carry the text and structure, not the ornamental artwork.
 - The Guna Milan calculator uses commonly published Ashtakoot tables and is indicative only.
