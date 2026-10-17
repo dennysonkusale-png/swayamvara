@@ -1026,18 +1026,20 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
    SWAYAMVARA (स्वयंवर) — Marriage Portfolio Builder
    Pure client-side. No server, no build step.
    ------------------------------------------------------------
-   EMAIL: fill in the EMAILJS block below to send mail directly.
-   Without keys the app falls back to "download PDF + open your
-   mail client" (mailto), which works everywhere.
+   EMAIL: by default the app saves the PDF and opens the user's own
+   mail client (mailto). To send directly instead, see MAIL_SERVICE
+   below and define window.sendMailViaService().
    ============================================================ */
 
-const EMAILJS = {
-  enabled: false,          // set true after filling these
+/* Optional. Left disabled (the default) the app simply saves the PDF and opens
+   the user's own mail client — nothing is sent anywhere. To send directly from
+   the app instead, set enabled:true and define window.sendMailViaService()
+   using whichever mail service you prefer. */
+const MAIL_SERVICE = {
+  enabled: false,
   publicKey: "YOUR_PUBLIC_KEY",
   serviceId: "YOUR_SERVICE_ID",
   templateId: "YOUR_TEMPLATE_ID",
-  // In your EmailJS template, use variables: {{to_email}}, {{subject}}, {{message}}
-  // and attach the PDF manually there, or use a paid plan for attachments.
 };
 
 /* ============================================================
@@ -1053,7 +1055,7 @@ const I18N = {
     invocation:"Invocation", close:"Close", sendByEmail:"Send by email",
     recipient:"Recipient email(s)", subject:"Subject", message:"Message",
     downloadOpenMail:"Download & open mail", sendNow:"Send now",
-    emailNote:"Your PDF is saved to your device and your mail app opens with the message ready — just attach the saved PDF and send. (Add EmailJS keys in the code for one-click sending.)",
+    emailNote:"Your PDF is saved to your device and your mail app opens with the message ready — just attach the saved PDF and send. (For one-click sending, connect your own mail service in the code.)",
     stepOf:(a,b)=>`Step ${a} of ${b}`, docFooter:"Created with स्वयंवर · Swayamvara",
     resetConfirm:"Clear all entered data and start fresh?",
     toastSaved:"Saved to this device", toastDownloaded:"Downloaded", toastReady:"Ready",
@@ -1125,7 +1127,7 @@ const I18N = {
     invocation:"मंगलाचरण", close:"बंद करें", sendByEmail:"ईमेल से भेजें",
     recipient:"प्राप्तकर्ता ईमेल", subject:"विषय", message:"संदेश",
     downloadOpenMail:"डाउनलोड करें और मेल खोलें", sendNow:"अभी भेजें",
-    emailNote:"आपकी PDF आपके डिवाइस में सहेज दी जाएगी और आपका मेल ऐप तैयार संदेश के साथ खुल जाएगा — बस सहेजी गई PDF संलग्न करें और भेजें। (एक-क्लिक भेजने हेतु कोड में EmailJS कीज़ जोड़ें।)",
+    emailNote:"आपकी PDF आपके डिवाइस में सहेज दी जाएगी और आपका मेल ऐप तैयार संदेश के साथ खुल जाएगा — बस सहेजी गई PDF संलग्न करें और भेजें। (एक-क्लिक भेजने हेतु कोड में अपनी मेल सेवा जोड़ें।)",
     stepOf:(a,b)=>`चरण ${a} / ${b}`, docFooter:"स्वयंवर के साथ निर्मित",
     resetConfirm:"सारा भरा हुआ डेटा हटाकर नए सिरे से शुरू करें?",
     toastSaved:"इस डिवाइस में सहेजा गया", toastDownloaded:"डाउनलोड हो गया", toastReady:"तैयार",
@@ -1192,7 +1194,7 @@ const I18N = {
     invocation:"मंगलाचरण", close:"बंद करा", sendByEmail:"ईमेलने पाठवा",
     recipient:"प्राप्तकर्ता ईमेल", subject:"विषय", message:"संदेश",
     downloadOpenMail:"डाउनलोड करा व मेल उघडा", sendNow:"आता पाठवा",
-    emailNote:"तुमची PDF तुमच्या डिव्हाइसवर सेव्ह होईल आणि तुमचे मेल ॲप तयार संदेशासह उघडेल — फक्त सेव्ह केलेली PDF जोडा आणि पाठवा. (एका-क्लिक पाठवण्यासाठी कोडमध्ये EmailJS कीज भरा.)",
+    emailNote:"तुमची PDF तुमच्या डिव्हाइसवर सेव्ह होईल आणि तुमचे मेल ॲप तयार संदेशासह उघडेल — फक्त सेव्ह केलेली PDF जोडा आणि पाठवा. (एका-क्लिक पाठवण्यासाठी कोडमध्ये तुमची मेल सेवा जोडा.)",
     stepOf:(a,b)=>`पायरी ${a} / ${b}`, docFooter:"स्वयंवर सह तयार",
     resetConfirm:"सर्व भरलेली माहिती हटवून नव्याने सुरू करायचे?",
     toastSaved:"या डिव्हाइसवर सेव्ह झाले", toastDownloaded:"डाउनलोड झाले", toastReady:"तयार",
@@ -1259,7 +1261,7 @@ const I18N = {
     invocation:"मङ्गलाचरणम्", close:"पिधानम्", sendByEmail:"विद्युत्पत्रेण प्रेषयतु",
     recipient:"प्राप्तेः विद्युत्पत्रम्", subject:"विषयः", message:"सन्देशः",
     downloadOpenMail:"अवतरणं कृत्वा पत्रम् उद्घाटयतु", sendNow:"इदानीं प्रेषयतु",
-    emailNote:"भवतः PDF यन्त्रे रक्ष्यते, भवतः पत्रकार्यक्रमः सज्जसन्देशेन सह उद्घाट्यते — रक्षितां PDF संयोज्य प्रेषयतु। (एकक्लिकप्रेषणाय कोडे EmailJS कुञ्चिकाः योजयतु।)",
+    emailNote:"भवतः PDF यन्त्रे रक्ष्यते, भवतः पत्रकार्यक्रमः सज्जसन्देशेन सह उद्घाट्यते — रक्षितां PDF संयोज्य प्रेषयतु। (एकक्लिकप्रेषणाय कोडे स्वकीयं पत्रसेवां योजयतु।)",
     stepOf:(a,b)=>`चरणम् ${a} / ${b}`, docFooter:"स्वयंवरेण निर्मितम्",
     resetConfirm:"सर्वं लिखितं दत्तांशं अपनीय पुनः आरभ्यते?",
     toastSaved:"यन्त्रे रक्षितम्", toastDownloaded:"अवतरितम्", toastReady:"सज्जम्",
@@ -1433,7 +1435,7 @@ const STEPS = [
     { legend:"secEducation", fields:[
       {k:"qualification", l:"f_qualification", t:"text", ph:"e.g. Post-graduate"},
       {k:"degree", l:"f_degree", t:"text", ph:"e.g. M.Tech, Computer Engineering"},
-      {k:"institution", l:"f_institution", t:"text", ph:"e.g. COEP, Pune"},
+      {k:"institution", l:"f_institution", t:"text", ph:"e.g. Your college or university"},
       {k:"year", l:"f_year", t:"text", ph:"e.g. 2019"},
     ]},
     { legend:"secCareer", fields:[
@@ -1708,8 +1710,8 @@ const SAMPLE = {
     fatherOcc:"Retired Bank Manager", motherName:"Mother's name", motherOcc:"Homemaker",
     brothers:"1 elder", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
     nativePlace:"Kolhapur", familyNote:"A close-knit, traditional Maharashtrian family settled in Pune for three generations.",
-    qualification:"Post-graduate", degree:"M.Tech, Computer Engineering", institution:"COEP Technological University, Pune",
-    occupation:"Software Engineer", jobTitle:"Senior Engineer", employer:"Infosys", workCity:"Pune", experience:"5 years",
+    qualification:"Post-graduate", degree:"M.Tech, Computer Engineering", institution:"ABC Institute of Technology",
+    occupation:"Software Engineer", jobTitle:"Senior Engineer", employer:"ABC Technologies Pvt. Ltd.", workCity:"Pune", experience:"5 years",
     income:"₹24 lakh per annum", religion:"Hindu", caste:"Brahmin", subCaste:"Deshastha", community:"Marathi",
     gotra:"Kashyap", rashi:"Vrishabha", nakshatra:"Rohini", nadi:"Antya",
     languagesSpoken:"Marathi, Hindi, English", hobbies:"Trekking, classical music, reading",
@@ -1720,8 +1722,8 @@ const SAMPLE = {
     fatherOcc:"सेवानिवृत्त बैंक प्रबंधक", motherName:"माता का नाम", motherOcc:"गृहिणी",
     brothers:"1 बड़े", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
     nativePlace:"कोल्हापुर", familyNote:"तीन पीढ़ियों से पुणे में बसा एक घनिष्ठ, पारंपरिक महाराष्ट्रीय परिवार।",
-    qualification:"स्नातकोत्तर", degree:"एम.टेक, कंप्यूटर इंजीनियरिंग", institution:"सीओईपी तकनीकी विश्वविद्यालय, पुणे",
-    occupation:"सॉफ़्टवेयर इंजीनियर", jobTitle:"वरिष्ठ इंजीनियर", employer:"इंफोसिस", workCity:"पुणे", experience:"5 वर्ष",
+    qualification:"स्नातकोत्तर", degree:"एम.टेक, कंप्यूटर इंजीनियरिंग", institution:"एबीसी प्रौद्योगिकी संस्थान",
+    occupation:"सॉफ़्टवेयर इंजीनियर", jobTitle:"वरिष्ठ इंजीनियर", employer:"एबीसी टेक्नोलॉजीज़ प्रा. लि.", workCity:"पुणे", experience:"5 वर्ष",
     income:"₹24 लाख प्रति वर्ष", religion:"हिंदू", caste:"ब्राह्मण", subCaste:"देशस्थ", community:"मराठी",
     gotra:"कश्यप", rashi:"वृषभ", nakshatra:"रोहिणी", nadi:"अंत्य",
     languagesSpoken:"मराठी, हिंदी, अंग्रेज़ी", hobbies:"ट्रेकिंग, शास्त्रीय संगीत, पढ़ना",
@@ -1732,8 +1734,8 @@ const SAMPLE = {
     fatherOcc:"सेवानिवृत्त बँक व्यवस्थापक", motherName:"आईचे नाव", motherOcc:"गृहिणी",
     brothers:"1 मोठा", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
     nativePlace:"कोल्हापूर", familyNote:"तीन पिढ्यांपासून पुण्यात स्थायिक, घट्ट बांधलेले पारंपरिक महाराष्ट्रीय कुटुंब.",
-    qualification:"पदव्युत्तर", degree:"एम.टेक, संगणक अभियांत्रिकी", institution:"सीओईपी तंत्रज्ञान विद्यापीठ, पुणे",
-    occupation:"सॉफ्टवेअर अभियंता", jobTitle:"वरिष्ठ अभियंता", employer:"इन्फोसिस", workCity:"पुणे", experience:"5 वर्षे",
+    qualification:"पदव्युत्तर", degree:"एम.टेक, संगणक अभियांत्रिकी", institution:"एबीसी तंत्रज्ञान संस्था",
+    occupation:"सॉफ्टवेअर अभियंता", jobTitle:"वरिष्ठ अभियंता", employer:"एबीसी टेक्नॉलॉजीज प्रा. लि.", workCity:"पुणे", experience:"5 वर्षे",
     income:"₹24 लाख वार्षिक", religion:"हिंदू", caste:"ब्राह्मण", subCaste:"देशस्थ", community:"मराठी",
     gotra:"कश्यप", rashi:"वृषभ", nakshatra:"रोहिणी", nadi:"अंत्य",
     languagesSpoken:"मराठी, हिंदी, इंग्रजी", hobbies:"ट्रेकिंग, शास्त्रीय संगीत, वाचन",
@@ -1744,8 +1746,8 @@ const SAMPLE = {
     fatherOcc:"निवृत्तः बैङ्कप्रबन्धकः", motherName:"मातुः नाम", motherOcc:"गृहिणी",
     brothers:"1 ज्येष्ठः", sisters:"0", familyType:"jointFamily", familyValues:"traditional",
     nativePlace:"कोल्हापुरम्", familyNote:"त्रिपुरुषैः पुण्यनगरे निवसत् घनिष्ठं पारम्परिकं महाराष्ट्रीयं कुटुम्बम्।",
-    qualification:"स्नातकोत्तरः", degree:"एम.टेक्, संगणकाभियन्त्रणम्", institution:"सीओईपी तन्त्रज्ञानविश्वविद्यालयः, पुणे",
-    occupation:"सङ्गणकाभियन्ता", jobTitle:"वरिष्ठः अभियन्ता", employer:"इन्फोसिस्", workCity:"पुणे", experience:"5 वर्षाणि",
+    qualification:"स्नातकोत्तरः", degree:"एम.टेक्, संगणकाभियन्त्रणम्", institution:"एबीसी तन्त्रज्ञानसंस्थानम्",
+    occupation:"सङ्गणकाभियन्ता", jobTitle:"वरिष्ठः अभियन्ता", employer:"एबीसी टेक्नोलॉजीज्", workCity:"पुणे", experience:"5 वर्षाणि",
     income:"₹24 लक्षं वार्षिकम्", religion:"हिन्दुः", caste:"ब्राह्मणः", subCaste:"देशस्थः", community:"मराठी",
     gotra:"कश्यपः", rashi:"वृषभः", nakshatra:"रोहिणी", nadi:"अन्त्या",
     languagesSpoken:"मराठी, हिन्दी, आङ्ग्लम्", hobbies:"पर्वतारोहणम्, शास्त्रीयसङ्गीतम्, पठनम्",
@@ -2006,8 +2008,8 @@ async function sendEmail(){
   const subject=$("#emailSub").value, message=$("#emailMsg").value;
   busy(true, tL(state.lang,"busyMail"));
   try{
-    if(EMAILJS.enabled && window.emailjs){
-      await window.emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, {to_email:to, subject, message});
+    if(MAIL_SERVICE.enabled && typeof window.sendMailViaService === "function"){
+      await window.sendMailViaService({to:to, subject:subject, message:message});
       busy(false); $("#emailModal").classList.remove("open"); toast("✉ "+tL(state.lang,"toastReady"));
       return;
     }
