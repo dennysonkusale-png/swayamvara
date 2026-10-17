@@ -11,6 +11,9 @@ a fitting name for a tool that helps you present yourself on your own terms.
 
 ## Features
 
+- **Wedding banner garland** — a mango-leaf *toran* (तोरण) with a floral pendant and corner
+  sprays across the top of every design, drawn in the template's own colours. Switch it off
+  from the Template library if you prefer a plain banner.
 - **Sample preview** — tap **Sample** to see any design filled with example content before you
   type a single detail. Your own entries are never touched, and the Template library opens
   beside the live preview so you can compare designs at a glance.
@@ -57,8 +60,8 @@ they need an internet connection. Everything else works offline.
 - For one-click email sending, add your [EmailJS](https://www.emailjs.com/) keys to the
   `EMAILJS` block near the top of the script. Without keys, the app saves the PDF and opens
   your mail client instead.
-- Floral motifs appear in the on-screen preview and in the PDF, PNG and JPG exports. The DOCX
-  and PPTX files carry the text and structure, not the ornamental artwork.
+- The banner garland and floral motifs appear in the on-screen preview and in the PDF, PNG and
+  JPG exports. The DOCX and PPTX files carry the text and structure, not the ornamental artwork.
 - The Guna Milan calculator uses commonly published Ashtakoot tables and is indicative only.
   Please confirm with a qualified astrologer before making any decision.
 
